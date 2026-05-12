@@ -3,87 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReadWise - Welcome</title>
+    <title>ReadWise Quest — Master English Reading</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="particles" id="particles"></div>
+    
     <div class="container">
-        <header class="welcome-header">
-            <div class="logo-container">
-                <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="ReadWise Logo" class="app-logo">
-                <div class="logo-text">
-                    <h1>ReadWise</h1>
-                    <p>Interactive Reading Comprehension</p>
+        <div class="hero-section">
+            <div class="logo-hero">
+                <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="ReadWise" class="logo-pulse">
+                <div class="logo-glow"></div>
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="gradient-text">ReadWise</span>
+                <span class="quest-badge">QUEST</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                No solo leas en inglés. <strong>Domínalo.</strong><br>
+                Gana puntos, sube de nivel y conviértete en un maestro de la lectura.
+            </p>
+
+            <div class="stats-bar">
+                <div class="stat-hero">
+                    <span class="stat-hero-num" id="totalUsers">0</span>
+                    <span class="stat-hero-label">Lectores activos</span>
+                </div>
+                <div class="stat-hero">
+                    <span class="stat-hero-num">12</span>
+                    <span class="stat-hero-label">Niveles de lectura</span>
+                </div>
+                <div class="stat-hero">
+                    <span class="stat-hero-num">∞</span>
+                    <span class="stat-hero-label">Posibilidades</span>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <main class="welcome-card">
-            <div class="welcome-content">
-                <h2>👋 Welcome to ReadWise!</h2>
-                <p class="welcome-desc">
-                    This app helps you <strong>understand</strong> English texts, not just read them. 
-                    We guide you to find answers using <em>your own knowledge</em>.
-                </p>
-                
-                <div class="name-form">
-                    <label for="studentName">What's your name?</label>
-                    <input type="text" id="studentName" placeholder="Type your name here..." maxlength="30">
-                    <p class="hint">This will be your username. We'll remember you!</p>
+        <div class="onboarding-card glass">
+            <div class="avatar-selection">
+                <h3>👤 Elige tu avatar</h3>
+                <div class="avatar-grid" id="avatarGrid">
+                    <!-- Avatares generados por JS -->
                 </div>
-
-                <button class="start-btn" onclick="saveName()">
-                    🚀 Start Learning
-                </button>
             </div>
 
-            <div class="features-preview">
-                <div class="feature-item">
-                    <span>📖</span>
-                    <p>Read at your level</p>
+            <div class="name-input-section">
+                <label for="studentName">¿Cómo te llamas, futuro maestro?</label>
+                <div class="input-wrapper">
+                    <input type="text" id="studentName" placeholder="Tu nombre aquí..." maxlength="20" autocomplete="off">
+                    <span class="input-icon">✨</span>
                 </div>
-                <div class="feature-item">
-                    <span>🎯</span>
-                    <p>Interactive questions</p>
-                </div>
-                <div class="feature-item">
-                    <span>💡</span>
-                    <p>Hints, not answers</p>
-                </div>
-                <div class="feature-item">
-                    <span>🔊</span>
-                    <p>Listen & pronounce</p>
-                </div>
+                <p class="input-hint">Este será tu nombre de héroe en tu aventura de lectura</p>
             </div>
-        </main>
 
-        <footer class="app-footer">
-            <p>Empowering students through reading comprehension</p>
-        </footer>
+            <button class="cta-button" onclick="startAdventure()" id="startBtn">
+                <span class="btn-text">🚀 Comenzar mi aventura</span>
+                <span class="btn-shine"></span>
+            </button>
+        </div>
+
+        <div class="features-showcase">
+            <div class="feature-card glass">
+                <div class="feature-icon">🎯</div>
+                <h4>Desafíos</h4>
+                <p>Gana XP completando lecturas y respondiendo con tu propio criterio</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">🏆</div>
+                <h4>Logros</h4>
+                <p>Desbloquea insignias por rachas, niveles completados y más</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">📈</div>
+                <h4>Progreso</h4>
+                <p>Visualiza tu crecimiento con un mapa de aventura interactivo</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">🌟</div>
+                <h4>Ranking</h4>
+                <p>Compite contigo mismo y supera tu propio récord cada día</p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Check if user already exists
-        const savedName = localStorage.getItem('readwiseUser');
-        if (savedName) {
-            window.location.href = 'level-select.html';
+        // Partículas animadas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Avatares
+        const avatars = ['🦁', '🦊', '🐼', '🦉', '🐺', '🐯', '🦋', '🦄'];
+        let selectedAvatar = avatars[0];
+        
+        const avatarGrid = document.getElementById('avatarGrid');
+        avatars.forEach((avatar, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'avatar-btn' + (i === 0 ? ' selected' : '');
+            btn.textContent = avatar;
+            btn.onclick = () => {
+                document.querySelectorAll('.avatar-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedAvatar = avatar;
+            };
+            avatarGrid.appendChild(btn);
+        });
+
+        // Animación contador
+        function animateCounter(el, target, duration = 2000) {
+            let start = 0;
+            const step = timestamp => {
+                const progress = Math.min((timestamp - start) / duration, 1);
+                el.textContent = Math.floor(progress * target).toLocaleString();
+                if (progress < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
         }
 
-        function saveName() {
+        // Simular usuarios (en producción vendría de backend)
+        setTimeout(() => animateCounter(document.getElementById('totalUsers'), 2847), 500);
+
+        // Verificar usuario existente
+        const savedUser = localStorage.getItem('readwiseUser');
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+            document.getElementById('studentName').value = user.name;
+            const avatarBtns = document.querySelectorAll('.avatar-btn');
+            const idx = avatars.indexOf(user.avatar);
+            if (idx >= 0) {
+                avatarBtns.forEach(b => b.classList.remove('selected'));
+                avatarBtns[idx].classList.add('selected');
+                selectedAvatar = user.avatar;
+            }
+        }
+
+        function startAdventure() {
             const name = document.getElementById('studentName').value.trim();
             if (name.length < 2) {
-                alert('Please enter your name (at least 2 characters)');
+                shakeInput();
                 return;
             }
-            localStorage.setItem('readwiseUser', name);
-            localStorage.setItem('readwiseJoined', new Date().toISOString());
-            window.location.href = 'level-select.html';
+
+            const userData = {
+                name: name,
+                avatar: selectedAvatar,
+                xp: 0,
+                level: 1,
+                title: 'Novice Reader',
+                streak: 0,
+                lastActive: new Date().toISOString(),
+                completed: [],
+                badges: [],
+                totalHints: 0,
+                joined: new Date().toISOString()
+            };
+
+            // Si ya existe, preservar progreso
+            const existing = localStorage.getItem('readwiseUser');
+            if (existing) {
+                const old = JSON.parse(existing);
+                userData.xp = old.xp || 0;
+                userData.level = old.level || 1;
+                userData.title = old.title || 'Novice Reader';
+                userData.streak = old.streak || 0;
+                userData.completed = old.completed || [];
+                userData.badges = old.badges || [];
+                userData.totalHints = old.totalHints || 0;
+            }
+
+            localStorage.setItem('readwiseUser', JSON.stringify(userData));
+            
+            // Animación de transición
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0';
+            setTimeout(() => window.location.href = 'hub.html', 500);
         }
 
-        // Allow Enter key
-        document.getElementById('studentName').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') saveName();
+        function shakeInput() {
+            const wrapper = document.querySelector('.input-wrapper');
+            wrapper.classList.add('shake');
+            setTimeout(() => wrapper.classList.remove('shake'), 500);
+        }
+
+        // Enter key
+        document.getElementById('studentName').addEventListener('keypress', e => {
+            if (e.key === 'Enter') startAdventure();
         });
     </script>
 </body>
