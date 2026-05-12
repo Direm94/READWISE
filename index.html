@@ -59,7 +59,7 @@
                 <p class="input-hint">Este será tu nombre de héroe en tu aventura de lectura</p>
             </div>
 
-            <button class="cta-button" onclick="startAdventure()" id="startBtn">
+            <button class="cta-button" onclick="window.startAdventure()" id="startBtn">
                 <span class="btn-text">🚀 Comenzar mi aventura</span>
                 <span class="btn-shine"></span>
             </button>
@@ -90,9 +90,14 @@
     </div>
 
     <script>
-        // Partículas animadas
+        // ============================================
+        // READWISE QUEST - SCRIPT PRINCIPAL (CORREGIDO)
+        // ============================================
+        
+        // --- PARTÍCULAS ---
         function createParticles() {
             const container = document.getElementById('particles');
+            if (!container) return;
             for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -102,59 +107,69 @@
                 container.appendChild(particle);
             }
         }
-        createParticles();
-
-        // Avatares
+        
+        // --- AVATARES ---
         const avatars = ['🦁', '🦊', '🐼', '🦉', '🐺', '🐯', '🦋', '🦄'];
         let selectedAvatar = avatars[0];
         
-        const avatarGrid = document.getElementById('avatarGrid');
-        avatars.forEach((avatar, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'avatar-btn' + (i === 0 ? ' selected' : '');
-            btn.textContent = avatar;
-            btn.onclick = () => {
-                document.querySelectorAll('.avatar-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedAvatar = avatar;
-            };
-            avatarGrid.appendChild(btn);
-        });
-
-        // Animación contador
+        function initAvatars() {
+            const avatarGrid = document.getElementById('avatarGrid');
+            if (!avatarGrid) return;
+            
+            avatars.forEach((avatar, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'avatar-btn' + (i === 0 ? ' selected' : '');
+                btn.textContent = avatar;
+                btn.onclick = () => {
+                    document.querySelectorAll('.avatar-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedAvatar = avatar;
+                };
+                avatarGrid.appendChild(btn);
+            });
+        }
+        
+        // --- CONTADOR DE USUARIOS ---
         function animateCounter(el, target, duration = 2000) {
-            let start = 0;
-            const step = timestamp => {
-                const progress = Math.min((timestamp - start) / duration, 1);
+            if (!el) return;
+            let startTime = null;
+            const step = (timestamp) => {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
                 el.textContent = Math.floor(progress * target).toLocaleString();
-                if (progress < 1) requestAnimationFrame(step);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
             };
             requestAnimationFrame(step);
         }
-
-        setTimeout(() => animateCounter(document.getElementById('totalUsers'), 2847), 500);
-
-        // Verificar usuario existente
-        const savedUser = localStorage.getItem('readwiseUser');
-        if (savedUser) {
-            const user = JSON.parse(savedUser);
-            document.getElementById('studentName').value = user.name;
-            const avatarBtns = document.querySelectorAll('.avatar-btn');
-            const idx = avatars.indexOf(user.avatar);
-            if (idx >= 0) {
-                avatarBtns.forEach(b => b.classList.remove('selected'));
-                avatarBtns[idx].classList.add('selected');
-                selectedAvatar = user.avatar;
-            }
+        
+        // --- SHAKE ANIMATION ---
+        function shakeInput() {
+            const wrapper = document.querySelector('.input-wrapper');
+            if (!wrapper) return;
+            wrapper.classList.add('shake');
+            setTimeout(() => wrapper.classList.remove('shake'), 500);
         }
-
-        function startAdventure() {
-            const name = document.getElementById('studentName').value.trim();
+        
+        // --- FUNCIÓN PRINCIPAL: START ADVENTURE (GLOBAL) ---
+        window.startAdventure = function() {
+            console.log('🚀 startAdventure() called');
+            
+            const nameInput = document.getElementById('studentName');
+            const name = nameInput ? nameInput.value.trim() : '';
+            
+            // Validación
             if (name.length < 2) {
+                console.log('❌ Nombre muy corto:', name);
                 shakeInput();
                 return;
             }
-
+            
+            console.log('✅ Nombre válido:', name);
+            console.log('✅ Avatar seleccionado:', selectedAvatar);
+            
+            // Crear datos de usuario
             const userData = {
                 name: name,
                 avatar: selectedAvatar,
@@ -168,35 +183,102 @@
                 totalHints: 0,
                 joined: new Date().toISOString()
             };
-
+            
+            // Verificar si ya existe usuario (para preservar progreso)
             const existing = localStorage.getItem('readwiseUser');
             if (existing) {
-                const old = JSON.parse(existing);
-                userData.xp = old.xp || 0;
-                userData.level = old.level || 1;
-                userData.title = old.title || 'Novice Reader';
-                userData.streak = old.streak || 0;
-                userData.completed = old.completed || [];
-                userData.badges = old.badges || [];
-                userData.totalHints = old.totalHints || 0;
+                console.log('📀 Usuario existente encontrado, preservando progreso...');
+                try {
+                    const old = JSON.parse(existing);
+                    userData.xp = old.xp || 0;
+                    userData.level = old.level || 1;
+                    userData.title = old.title || 'Novice Reader';
+                    userData.streak = old.streak || 0;
+                    userData.completed = old.completed || [];
+                    userData.badges = old.badges || [];
+                    userData.totalHints = old.totalHints || 0;
+                } catch(e) {
+                    console.warn('Error al parsear usuario existente:', e);
+                }
             }
-
-            localStorage.setItem('readwiseUser', JSON.stringify(userData));
             
+            // Guardar en localStorage
+            localStorage.setItem('readwiseUser', JSON.stringify(userData));
+            console.log('💾 Usuario guardado:', userData.name);
+            
+            // Animación de transición
             document.body.style.transition = 'opacity 0.5s';
             document.body.style.opacity = '0';
-            setTimeout(() => window.location.href = 'hub.html', 500);
+            
+            // Redirigir al hub
+            setTimeout(() => {
+                console.log('🔀 Redirigiendo a hub.html');
+                window.location.href = 'hub.html';
+            }, 500);
+        };
+        
+        // --- VERIFICAR USUARIO EXISTENTE ---
+        function loadExistingUser() {
+            const savedUser = localStorage.getItem('readwiseUser');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    const nameInput = document.getElementById('studentName');
+                    if (nameInput) {
+                        nameInput.value = user.name;
+                    }
+                    
+                    // Seleccionar avatar guardado
+                    const avatarBtns = document.querySelectorAll('.avatar-btn');
+                    const idx = avatars.indexOf(user.avatar);
+                    if (idx >= 0 && avatarBtns[idx]) {
+                        avatarBtns.forEach(b => b.classList.remove('selected'));
+                        avatarBtns[idx].classList.add('selected');
+                        selectedAvatar = user.avatar;
+                    }
+                    console.log('👤 Usuario cargado:', user.name);
+                } catch(e) {
+                    console.warn('Error al cargar usuario:', e);
+                }
+            }
         }
-
-        function shakeInput() {
-            const wrapper = document.querySelector('.input-wrapper');
-            wrapper.classList.add('shake');
-            setTimeout(() => wrapper.classList.remove('shake'), 500);
+        
+        // --- EVENTO ENTER ---
+        function initEnterKey() {
+            const nameInput = document.getElementById('studentName');
+            if (nameInput) {
+                nameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        console.log('⏎ Enter presionado');
+                        window.startAdventure();
+                    }
+                });
+            }
         }
-
-        document.getElementById('studentName').addEventListener('keypress', e => {
-            if (e.key === 'Enter') startAdventure();
-        });
+        
+        // --- INICIALIZACIÓN ---
+        function init() {
+            console.log('🎮 ReadWise Quest - Inicializando...');
+            createParticles();
+            initAvatars();
+            loadExistingUser();
+            initEnterKey();
+            
+            // Contador animado (simula usuarios activos)
+            setTimeout(() => {
+                const totalUsersEl = document.getElementById('totalUsers');
+                if (totalUsersEl) {
+                    animateCounter(totalUsersEl, 2847);
+                }
+            }, 500);
+        }
+        
+        // Ejecutar inicialización cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
