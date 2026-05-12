@@ -29,7 +29,6 @@
     </nav>
 
     <div class="container reader-container">
-        <!-- Barra de progreso de lectura -->
         <div class="reading-progress-bar">
             <div class="reading-progress-fill" id="readingProgress"></div>
         </div>
@@ -62,7 +61,7 @@
                         <span class="tool-icon">🔊</span>
                         <span>Escuchar texto</span>
                     </button>
-                </button>
+                </div>
                 
                 <div class="tool-section">
                     <h3>💡 Ayudas</h3>
@@ -146,7 +145,7 @@
     </div>
 
     <script>
-        // ========== DATOS ==========
+        // ========== BASE DE DATOS COMPLETA ==========
         const readingDB = {
             'a1-1': {
                 title: 'My Morning Routine',
@@ -182,18 +181,6 @@
                             'typical': 'típico/habitual',
                             'exactly': 'exactamente',
                             'change': 'cambiar'
-                        }
-                    },
-                    {
-                        id: 3,
-                        text: 'Why do you think the person specifically mentions reading before bed? What does this tell us about their priorities?',
-                        textES: '¿Por qué crees que la persona menciona específicamente que lee antes de dormir? ¿Qué nos dice esto sobre sus prioridades?',
-                        guidance: 'Look at the order of activities. What importance does this last activity before sleeping have?',
-                        guidanceES: 'Observa el orden de las actividades. ¿Qué importancia tiene esta última actividad antes de dormir?',
-                        vocabHelp: {
-                            'specifically': 'específicamente',
-                            'mentions': 'menciona',
-                            'priorities': 'prioridades (lo que es más importante para ti)'
                         }
                     }
                 ],
@@ -240,24 +227,12 @@
                             'usual': 'habitual/lo de siempre',
                             'trust': 'confianza'
                         }
-                    },
-                    {
-                        id: 3,
-                        text: 'The writer says they sometimes do homework, sometimes read, and sometimes talk with Maria. What does this tell us about how they use the place?',
-                        textES: 'El autor dice que a veces hace tareas, a veces lee, y a veces habla con Maria. ¿Qué nos dice esto sobre cómo usa el lugar?',
-                        guidance: 'Is it just for eating or does it have different purposes? What kind of place allows that?',
-                        guidanceES: '¿Es solo para comer o tiene diferentes propósitos? ¿Qué tipo de lugar permite eso?',
-                        vocabHelp: {
-                            'sometimes': 'a veces',
-                            'homework': 'tarea',
-                            'purposes': 'propósitos/usos'
-                        }
                     }
                 ],
                 hints: [
                     '🔍 Pay attention to emotions: "happy", "relaxed", "cozy". What creates these feelings?',
-                    '🔍 The writer mentions "watch people walk by". Why do they like this? What kind of person enjoys observing?',
-                    '🔍 Compare "The Morning Sun" with other places. What makes it different from a normal coffee shop?'
+                    '🔍 The writer mentions "watch people walk by". Why do they like this?',
+                    '🔍 Compare "The Morning Sun" with other places. What makes it different?'
                 ],
                 xp: 50,
                 difficulty: '⭐'
@@ -273,12 +248,12 @@
                     'valley': 'valle',
                     'entire': 'entero/completo'
                 },
-                keyPhrases: ['planned the trip for two weeks', 'the view was amazing', 'more difficult than it looked', 'I felt proud and happy', 'nature is more beautiful than any video game', 'never forget this trip'],
+                keyPhrases: ['planned the trip for two weeks', 'the view was amazing', 'more difficult than it looked', 'I felt proud and happy', 'nature is more beautiful than any video game'],
                 questions: [
                     {
                         id: 1,
-                        text: 'The writer says they planned the trip for two weeks. What does this tell us about their personality or way of being?',
-                        textES: 'El autor dice que planeó el viaje por dos semanas. ¿Qué nos dice esto sobre su personalidad o forma de ser?',
+                        text: 'The writer says they planned the trip for two weeks. What does this tell us about their personality?',
+                        textES: 'El autor dice que planeó el viaje por dos semanas. ¿Qué nos dice esto sobre su personalidad?',
                         guidance: 'Why would someone plan for so long? What importance do they give to preparation?',
                         guidanceES: '¿Por qué alguien planearía tanto tiempo? ¿Qué importancia le da a la preparación?',
                         vocabHelp: {
@@ -289,45 +264,21 @@
                     },
                     {
                         id: 2,
-                        text: 'The tent was "more difficult than it looked in the video". What lesson did the writer learn here about expectations vs. reality?',
-                        textES: 'La tienda fue "more difficult than it looked in the video". ¿Qué lección aprendió el autor aquí sobre expectativas vs. realidad?',
-                        guidance: 'Think about the difference between watching something and doing it. Is watching the same as experiencing?',
-                        guidanceES: 'Piensa en la diferencia entre ver algo y hacerlo. ¿Es lo mismo ver que experimentar?',
+                        text: 'The tent was "more difficult than it looked in the video". What lesson did the writer learn?',
+                        textES: 'La tienda fue "más difícil de lo que parecía en el video". ¿Qué lección aprendió el autor?',
+                        guidance: 'Think about the difference between watching something and doing it.',
+                        guidanceES: 'Piensa en la diferencia entre ver algo y hacerlo.',
                         vocabHelp: {
-                            'expectations': 'expectativas (lo que esperas)',
+                            'expectations': 'expectativas',
                             'reality': 'realidad',
                             'lesson': 'lección'
-                        }
-                    },
-                    {
-                        id: 3,
-                        text: 'Why do you think the writer compares nature with video games at the end? What changed in their perspective?',
-                        textES: '¿Por qué crees que el autor compara la naturaleza con los videojuegos al final? ¿Qué cambió en su perspectiva?',
-                        guidance: 'What was the writer doing before the trip? What did they discover that surprised them?',
-                        guidanceES: '¿Qué estaba haciendo el autor antes del viaje? ¿Qué descubrió que lo sorprendió?',
-                        vocabHelp: {
-                            'compares': 'compara',
-                            'perspective': 'perspectiva (cómo ves las cosas)',
-                            'surprised': 'sorprendido'
-                        }
-                    },
-                    {
-                        id: 4,
-                        text: 'The trip had a difficult moment (the rain). How did the writer react? What does this tell us about their attitude?',
-                        textES: 'El viaje tuvo un momento difícil (la lluvia). ¿Cómo reaccionó el autor? ¿Qué nos dice esto sobre su actitud?',
-                        guidance: 'Look at how they describe the rain. Is the final memory negative or positive?',
-                        guidanceES: 'Mira cómo describe la lluvia. ¿Es el recuerdo final negativo o positivo?',
-                        vocabHelp: {
-                            'react': 'reaccionar',
-                            'attitude': 'actitud',
-                            'memory': 'recuerdo'
                         }
                     }
                 ],
                 hints: [
-                    '🔍 The writer uses comparisons. Find "more difficult than" and "more beautiful than". What are they comparing and why?',
-                    '🔍 Pay attention to feelings: "proud", "happy", "never forget". What triggers these feelings?',
-                    '🔍 The text contrasts preparation vs. reality, and technology vs. nature. What is the final message?'
+                    '🔍 The writer uses comparisons. Find "more difficult than" and "more beautiful than".',
+                    '🔍 Pay attention to feelings: "proud", "happy", "never forget".',
+                    '🔍 The text contrasts preparation vs. reality, and technology vs. nature.'
                 ],
                 xp: 75,
                 difficulty: '⭐⭐'
@@ -346,70 +297,44 @@
                     'caffeine': 'cafeína',
                     'investment': 'inversión'
                 },
-                keyPhrases: ['sleep is not a luxury', 'processes information from the day', 'sacrificing sleep will help them achieve more', 'the opposite happens', 'an investment in your health and success'],
+                keyPhrases: ['sleep is not a luxury', 'processes information from the day', 'sacrificing sleep will help them achieve more', 'the opposite happens', 'an investment in your health'],
                 questions: [
                     {
                         id: 1,
-                        text: 'The text says we live in a society that values productivity. How do you think this social pressure affects our sleep? Is it conscious or unconscious?',
-                        textES: 'El texto dice que vivimos en una sociedad que valora la productividad. ¿Cómo crees que esta presión social afecta nuestro sueño? ¿Es consciente o inconsciente?',
+                        text: 'The text says we live in a society that values productivity. How does this pressure affect our sleep?',
+                        textES: 'El texto dice que vivimos en una sociedad que valora la productividad. ¿Cómo afecta esta presión nuestro sueño?',
                         guidance: 'Think about social expectations. Do we feel pressure to always be busy?',
                         guidanceES: 'Piensa en las expectativas sociales. ¿Sentimos presión por estar siempre ocupados?',
                         vocabHelp: {
                             'society': 'sociedad',
                             'pressure': 'presión',
-                            'conscious': 'consciente (lo que sabes)',
-                            'unconscious': 'inconsciente (lo que no sabes que haces)'
+                            'productivity': 'productividad'
                         }
                     },
                     {
                         id: 2,
-                        text: 'The writer compares sleep with an investment. Why do you think they use this economic metaphor? What does it imply?',
-                        textES: 'El autor compara el sueño con una inversión. ¿Por qué crees que usa esta metáfora económica? ¿Qué implica?',
-                        guidance: 'An investment requires something now to get benefits later. How does this work with sleep?',
-                        guidanceES: 'Una inversión requiere algo ahora para obtener beneficios después. ¿Cómo funciona esto con el sueño?',
+                        text: 'The writer compares sleep with an investment. Why do they use this metaphor?',
+                        textES: 'El autor compara el sueño con una inversión. ¿Por qué usa esta metáfora?',
+                        guidance: 'An investment requires something now to get benefits later.',
+                        guidanceES: 'Una inversión requiere algo ahora para obtener beneficios después.',
                         vocabHelp: {
                             'investment': 'inversión',
-                            'metaphor': 'metáfora (comparación poética)',
-                            'imply': 'implicar/significar'
-                        }
-                    },
-                    {
-                        id: 3,
-                        text: 'Many students sacrifice sleep to study more. According to the text, why is this counterproductive? What paradox does it present?',
-                        textES: 'Muchos estudiantes sacrifican sueño por estudiar más. Según el texto, ¿por qué es esto contraproducente? ¿Qué paradoja presenta?',
-                        guidance: 'Find the phrase "the opposite happens". What do they expect to achieve and what do they actually get?',
-                        guidanceES: 'Busca la frase "the opposite happens". ¿Qué esperan lograr y qué realmente obtienen?',
-                        vocabHelp: {
-                            'sacrifice': 'sacrificar',
-                            'counterproductive': 'contraproducente',
-                            'paradox': 'paradoja (algo que parece ilógico pero es verdad)'
-                        }
-                    },
-                    {
-                        id: 4,
-                        text: 'The text mentions that blue light "tricks" our brain. What does this tell us about the relationship between technology and biology?',
-                        textES: 'El texto menciona que la luz azul "engaña" al cerebro. ¿Qué nos dice esto sobre la relación entre tecnología y biología?',
-                        guidance: 'Our body has natural mechanisms. How does modern technology interrupt them?',
-                        guidanceES: 'Nuestro cuerpo tiene mecanismos naturales. ¿Cómo la tecnología moderna los interrumpe?',
-                        vocabHelp: {
-                            'tricks': 'engaña',
-                            'relationship': 'relación',
-                            'technology': 'tecnología',
-                            'biology': 'biología (cuerpo natural)'
+                            'metaphor': 'metáfora',
+                            'benefits': 'beneficios'
                         }
                     }
                 ],
                 hints: [
-                    '🔍 The text contrasts social perception vs. scientific reality. What does society say and what do studies say?',
-                    '🔍 Look for the words "however" and "in reality". What contradictions does the writer present?',
-                    '🔍 The text has a structure: problem → consequences → solutions. Can you identify each part?'
+                    '🔍 The text contrasts social perception vs. scientific reality.',
+                    '🔍 Look for the words "however" and "in reality".',
+                    '🔍 The text has a structure: problem → consequences → solutions.'
                 ],
                 xp: 100,
                 difficulty: '⭐⭐⭐'
             }
         };
 
-        // ========== VARIABLES ==========
+        // ========== VARIABLES GLOBALES ==========
         let currentReading = null;
         let hintIndex = 0;
         let highlightMode = false;
@@ -417,6 +342,7 @@
         let startTime = Date.now();
         let timerInterval;
         let userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        let originalText = '';
 
         // ========== INICIALIZACIÓN ==========
         function init() {
@@ -433,7 +359,8 @@
                 return;
             }
 
-            // UI
+            originalText = currentReading.text;
+
             document.getElementById('readingTitle').textContent = currentReading.title;
             document.getElementById('diffBadge').textContent = currentReading.difficulty;
             document.getElementById('xpBadge').textContent = `+${currentReading.xp} XP`;
@@ -441,17 +368,15 @@
             document.getElementById('miniName').textContent = userData.name;
             document.getElementById('miniLevel').textContent = userData.level || 1;
             
-            // XP bar
-            const xpForNext = (userData.level || 1) * 100;
-            const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+            const currentLevelXP = (userData.xp || 0) % 100;
+            const xpPercent = (currentLevelXP / 100) * 100;
             document.getElementById('xpFill').style.width = xpPercent + '%';
-            document.getElementById('xpText').textContent = `${userData.xp || 0} XP`;
+            document.getElementById('xpText').textContent = `${currentLevelXP} / 100 XP`;
 
             renderText();
             startTimer();
             updateStats();
             
-            // Scroll indicator
             window.addEventListener('scroll', () => {
                 const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
                 document.getElementById('readingProgress').style.width = Math.min(scrollPercent, 100) + '%';
@@ -472,15 +397,23 @@
         }
 
         function renderText() {
-            let text = currentReading.text;
+            let text = originalText;
             
             Object.keys(currentReading.difficultWords).forEach(word => {
                 const regex = new RegExp(`\\b${word}\\b`, 'gi');
                 text = text.replace(regex, `<span class="difficult-word" data-word="${word}" onclick="showWordHelp('${word}')">${word}</span>`);
             });
 
+            if (highlightMode) {
+                currentReading.keyPhrases.forEach(phrase => {
+                    const escapedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedPhrase, 'gi');
+                    text = text.replace(regex, `<mark class="key-phrase">${phrase}</mark>`);
+                });
+            }
+
             document.getElementById('textContent').innerHTML = `<p>${text}</p>`;
-            document.getElementById('wordsCount').textContent = currentReading.text.split(' ').length;
+            document.getElementById('wordsCount').textContent = originalText.split(' ').length;
         }
 
         function showWordHelp(word) {
@@ -488,7 +421,6 @@
             updateStats();
             const translation = currentReading.difficultWords[word];
             
-            // Remove existing popup
             const existing = document.querySelector('.word-popup');
             if (existing) existing.remove();
 
@@ -501,33 +433,23 @@
             `;
             
             const wordElement = document.querySelector(`[data-word="${word}"]`);
-            wordElement.appendChild(popup);
-
-            setTimeout(() => popup.remove(), 4000);
+            if (wordElement) {
+                wordElement.style.position = 'relative';
+                wordElement.appendChild(popup);
+                setTimeout(() => popup.remove(), 4000);
+            }
         }
 
         function toggleHighlight() {
             highlightMode = !highlightMode;
             const btn = document.getElementById('highlightBtn');
-            const textElement = document.getElementById('textContent');
             
             if (highlightMode) {
                 btn.classList.add('active');
-                let text = currentReading.text;
-                currentReading.keyPhrases.forEach(phrase => {
-                    const escapedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const regex = new RegExp(escapedPhrase, 'gi');
-                    text = text.replace(regex, `<mark class="key-phrase">${phrase}</mark>`);
-                });
-                textElement.innerHTML = `<p>${text}</p>`;
-                Object.keys(currentReading.difficultWords).forEach(word => {
-                    const regex = new RegExp(`\\b${word}\\b`, 'gi');
-                    textElement.innerHTML = textElement.innerHTML.replace(regex, `<span class="difficult-word" data-word="${word}" onclick="showWordHelp('${word}')">${word}</span>`);
-                });
             } else {
                 btn.classList.remove('active');
-                renderText();
             }
+            renderText();
         }
 
         function showVocabulary() {
@@ -541,13 +463,22 @@
 
         function toggleTranslation() {
             const words = document.querySelectorAll('.difficult-word');
-            words.forEach(word => word.classList.toggle('show-translation'));
+            words.forEach(word => {
+                const translation = currentReading.difficultWords[word.textContent];
+                if (word.classList.contains('show-translation')) {
+                    word.classList.remove('show-translation');
+                    word.setAttribute('title', '');
+                } else {
+                    word.classList.add('show-translation');
+                    word.setAttribute('title', translation);
+                }
+            });
         }
 
         function speakText() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(currentReading.text);
+                const utterance = new SpeechSynthesisUtterance(originalText);
                 utterance.lang = 'en-US';
                 utterance.rate = 0.85;
                 utterance.pitch = 1;
@@ -634,7 +565,8 @@
         }
 
         function toggleVocab(questionId) {
-            document.getElementById(`vocab-${questionId}`).classList.toggle('hidden');
+            const vocabDiv = document.getElementById(`vocab-${questionId}`);
+            if (vocabDiv) vocabDiv.classList.toggle('hidden');
         }
 
         function showGuidance(questionId) {
@@ -642,11 +574,13 @@
             updateStats();
             const question = currentReading.questions.find(q => q.id === questionId);
             const guidanceElement = document.getElementById(`guidance-${questionId}`);
-            guidanceElement.innerHTML = `
-                <div class="guidance-en"><strong>💡 Guidance:</strong> ${question.guidance}</div>
-                <div class="guidance-es">🇪🇸 ${question.guidanceES}</div>
-            `;
-            guidanceElement.classList.remove('hidden');
+            if (guidanceElement && question) {
+                guidanceElement.innerHTML = `
+                    <div class="guidance-en"><strong>💡 Guidance:</strong> ${question.guidance}</div>
+                    <div class="guidance-es">🇪🇸 ${question.guidanceES}</div>
+                `;
+                guidanceElement.classList.remove('hidden');
+            }
         }
 
         function checkUnderstanding() {
@@ -657,24 +591,24 @@
 
             const emptyAnswers = answers.filter(a => a.answer.length < 15);
             if (emptyAnswers.length > 0) {
-                shakeButton(document.querySelector('.submit-btn'));
+                const submitBtn = document.querySelector('.submit-btn');
+                submitBtn.classList.add('shake');
+                setTimeout(() => submitBtn.classList.remove('shake'), 500);
                 alert('Please answer all questions with at least 2-3 sentences. Your thinking matters!');
                 return;
             }
 
+            const readingId = localStorage.getItem('currentReading');
+            const completed = userData.completed || [];
+            const isFirstTime = !completed.includes(readingId);
+            
             // Calcular XP
             const baseXP = currentReading.xp;
             const hintPenalty = hintIndex * 5;
-            const timeBonus = Math.max(0, 20 - Math.floor((Date.now() - startTime) / 60000));
+            const elapsedMinutes = (Date.now() - startTime) / 60000;
+            let timeBonus = Math.max(0, Math.floor(15 - elapsedMinutes));
+            timeBonus = Math.min(timeBonus, 20);
             const totalXP = Math.max(baseXP - hintPenalty + timeBonus, 10);
-
- Continúo con el resto del código del reader y el CSS completo:
-
-```html
-            // Guardar progreso
-            const completed = userData.completed || [];
-            const readingId = localStorage.getItem('currentReading');
-            const isFirstTime = !completed.includes(readingId);
             
             if (isFirstTime) {
                 completed.push(readingId);
@@ -683,26 +617,83 @@
                 userData.totalHints = (userData.totalHints || 0) + helpClicks;
                 
                 // Subir de nivel
-                const newLevel = Math.floor((userData.xp / 100)) + 1;
-                if (newLevel > (userData.level || 1)) {
+                const newLevel = Math.floor((userData.xp || 0) / 100) + 1;
+                if (newLevel > (userData.level || 1) && newLevel <= 12) {
                     userData.level = newLevel;
                 }
                 
                 localStorage.setItem('readwiseUser', JSON.stringify(userData));
             }
 
-            // Mostrar celebración
-            showCelebration(totalXP, isFirstTime);
+            // Mostrar feedback constructivo
+            showFeedback(answers, totalXP, isFirstTime);
         }
 
-        function showCelebration(xp, isFirstTime) {
+        function showFeedback(answers, earnedXP, isFirstTime) {
+            const feedbackArea = document.getElementById('feedbackArea');
+            const timeElapsed = document.getElementById('readingTimer').textContent.replace('⏱️ ', '');
+            
+            const feedbackHTML = `
+                <div class="feedback-header">
+                    <h3>✨ ¡Excelente trabajo, ${userData.name}! ✨</h3>
+                    <p>Tus respuestas demuestran que has comprendido la esencia del texto.</p>
+                    <p>En la vida real, la comprensión lectora no se mide con respuestas correctas o incorrectas, sino con tu capacidad de reflexionar.</p>
+                </div>
+                <div class="feedback-details">
+                    ${answers.map((a, i) => `
+                        <div class="feedback-item">
+                            <div class="feedback-item-header">
+                                <span class="feedback-icon">💬</span>
+                                <span class="feedback-level">Tu respuesta ${i + 1}</span>
+                            </div>
+                            <div class="feedback-length">${a.answer.length} caracteres - ¡Buen desarrollo de ideas!</div>
+                            <div class="encouragement">💪 Has demostrado pensamiento crítico. Sigue así.</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="next-steps">
+                    <h4>🎯 ¿Qué sigue?</h4>
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <span class="step-icon">🏆</span>
+                            <p>Has ganado <strong>${earnedXP} XP</strong></p>
+                            <small>Tiempo: ${timeElapsed}</small>
+                        </div>
+                        <div class="step-card">
+                            <span class="step-icon">📊</span>
+                            <p>Recuerda que puedes repasar el texto cuando quieras</p>
+                        </div>
+                        <div class="step-card">
+                            <span class="step-icon">🌟</span>
+                            <p>Cada lectura te acerca más a la fluidez en inglés</p>
+                        </div>
+                    </div>
+                    <button class="new-reading-btn" onclick="closeCelebration()">
+                        Continuar mi aventura →
+                    </button>
+                </div>
+            `;
+            
+            feedbackArea.innerHTML = feedbackHTML;
+            feedbackArea.classList.remove('hidden');
+            
+            if (isFirstTime) {
+                showCelebration(earnedXP);
+            } else {
+                // Si ya estaba completada, solo mostrar feedback
+                feedbackArea.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showCelebration(xp) {
             const modal = document.getElementById('celebrationModal');
             document.getElementById('xpEarned').textContent = `+${xp}`;
             
+            const timeElapsed = document.getElementById('readingTimer').textContent.replace('⏱️ ', '');
             const statsHTML = `
                 <div class="c-stat">
                     <span class="c-stat-icon">⏱️</span>
-                    <span class="c-stat-val">${document.getElementById('readingTimer').textContent.replace('⏱️ ', '')}</span>
+                    <span class="c-stat-val">${timeElapsed}</span>
                     <span class="c-stat-label">Tiempo</span>
                 </div>
                 <div class="c-stat">
@@ -718,11 +709,8 @@
             `;
             document.getElementById('celebrationStats').innerHTML = statsHTML;
             
-            // Confetti
             createConfetti();
-            
             modal.classList.remove('hidden');
-            modal.style.animation = 'celebrationIn 0.6s ease';
         }
 
         function createConfetti() {
@@ -730,24 +718,23 @@
             container.innerHTML = '';
             const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
             
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 80; i++) {
                 const conf = document.createElement('div');
                 conf.className = 'confetti-piece';
                 conf.style.left = Math.random() * 100 + '%';
-                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 conf.style.animationDelay = Math.random() * 2 + 's';
                 conf.style.animationDuration = (2 + Math.random() * 2) + 's';
                 container.appendChild(conf);
             }
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 4000);
         }
 
         function closeCelebration() {
             window.location.href = 'hub.html';
-        }
-
-        function shakeButton(btn) {
-            btn.classList.add('shake');
-            setTimeout(() => btn.classList.remove('shake'), 500);
         }
 
         function toggleTheme() {
@@ -757,10 +744,9 @@
             localStorage.setItem('readwiseTheme', next);
         }
 
-        // Partículas
         function createParticles() {
             const container = document.getElementById('particles');
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 20; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle';
                 p.style.left = Math.random() * 100 + '%';
@@ -769,12 +755,25 @@
                 container.appendChild(p);
             }
         }
+        
         createParticles();
-
-        // Tema
         const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
         document.body.setAttribute('data-theme', savedTheme);
-
+        
+        // Exponer funciones globales
+        window.toggleHighlight = toggleHighlight;
+        window.showVocabulary = showVocabulary;
+        window.toggleTranslation = toggleTranslation;
+        window.speakText = speakText;
+        window.showHint = showHint;
+        window.finishReading = finishReading;
+        window.checkUnderstanding = checkUnderstanding;
+        window.toggleVocab = toggleVocab;
+        window.showGuidance = showGuidance;
+        window.closeCelebration = closeCelebration;
+        window.toggleTheme = toggleTheme;
+        window.showWordHelp = showWordHelp;
+        
         init();
     </script>
 </body>
