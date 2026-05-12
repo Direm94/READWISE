@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub — ReadWise Quest</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <nav class="top-nav glass">
+        <div class="nav-brand">
+            <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" class="nav-logo">
+            <span>ReadWise Quest</span>
+        </div>
+        <div class="nav-user">
+            <div class="streak-badge" id="streakBadge">
+                🔥 <span id="streakCount">0</span>
+            </div>
+            <div class="xp-bar-mini">
+                <div class="xp-fill" id="xpFill"></div>
+                <span id="xpText">0 XP</span>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <button class="icon-btn" onclick="logout()" title="Cambiar usuario">🚪</button>
+        </div>
+    </nav>
+
+    <div class="container hub-container">
+        <!-- Perfil del jugador -->
+        <div class="player-card glass">
+            <div class="player-avatar" id="playerAvatar">🦁</div>
+            <div class="player-info">
+                <h2 id="playerName">Jugador</h2>
+                <div class="player-title" id="playerTitle">Novice Reader</div>
+                <div class="level-badge">Nivel <span id="playerLevel">1</span></div>
+            </div>
+            <div class="player-stats">
+                <div class="p-stat">
+                    <span class="p-stat-num" id="statXP">0</span>
+                    <span class="p-stat-label">XP Total</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-num" id="statReadings">0</span>
+                    <span class="p-stat-label">Lecturas</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-num" id="statBadges">0</span>
+                    <span class="p-stat-label">Insignias</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapa de aventura -->
+        <div class="adventure-map glass">
+            <h3 class="section-title">🗺️ Mapa de Aventura</h3>
+            <p class="section-subtitle">Selecciona tu próximo desafío de lectura</p>
+            
+            <div class="map-path">
+                <div class="map-node unlocked" onclick="goToLevel('A1')">
+                    <div class="node-icon">🏔️</div>
+                    <div class="node-label">Valle A1</div>
+                    <div class="node-status" id="statusA1">0/3</div>
+                    <div class="node-ring"></div>
+                </div>
+                <div class="path-line" id="pathA1A2"></div>
+                <div class="map-node" id="nodeA2" onclick="goToLevel('A2')">
+                    <div class="node-icon">🌲</div>
+                    <div class="node-label">Bosque A2</div>
+                    <div class="node-status" id="statusA2">🔒</div>
+                    <div class="node-ring"></div>
+                </div>
+                <div class="path-line" id="pathA2B1"></div>
+                <div class="map-node" id="nodeB1" onclick="goToLevel('B1')">
+                    <div class="node-icon">🏰</div>
+                    <div class="node-label">Fortaleza B1</div>
+                    <div class="node-status" id="statusB1">🔒</div>
+                    <div class="node-ring"></div>
+                </div>
+                <div class="path-line" id="pathB1B2"></div>
+                <div class="map-node" id="nodeB2" onclick="goToLevel('B2')">
+                    <div class="node-icon">⭐</div>
+                    <div class="node-label">Cima B2</div>
+                    <div class="node-status" id="statusB2">🔒</div>
+                    <div class="node-ring"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insignias -->
+        <div class="badges-section glass">
+            <h3 class="section-title">🏆 Tus Insignias</h3>
+            <div class="badges-grid" id="badgesGrid">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+
+        <!-- Logros recientes -->
+        <div class="recent-activity glass">
+            <h3 class="section-title">📊 Actividad Reciente</h3>
+            <div id="activityList" class="activity-list">
+                <p class="empty-state">¡Comienza tu primera lectura para ver tu progreso!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Partículas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Cargar usuario
+        const userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        if (!userData.name) window.location.href = 'index.html';
+
+        // Títulos por nivel
+        const titles = {
+            1: 'Novice Reader', 2: 'Curious Reader', 3: 'Active Reader',
+            4: 'Dedicated Reader', 5: 'Avid Reader', 6: 'Book Explorer',
+            7: 'Story Master', 8: 'Literature Knight', 9: 'Reading Wizard',
+            10: 'Comprehension Sage', 11: 'Legendary Scholar', 12: 'Reading God'
+        };
+
+        // Actualizar UI
+        document.getElementById('playerName').textContent = userData.name;
+        document.getElementById('playerAvatar').textContent = userData.avatar || '🦁';
+        document.getElementById('playerLevel').textContent = userData.level || 1;
+        document.getElementById('playerTitle').textContent = titles[userData.level] || titles[1];
+        document.getElementById('streakCount').textContent = userData.streak || 0;
+        document.getElementById('statXP').textContent = (userData.xp || 0).toLocaleString();
+        document.getElementById('statReadings').textContent = (userData.completed || []).length;
+        
+        // XP bar
+        const xpForNext = (userData.level || 1) * 100;
+        const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+        document.getElementById('xpFill').style.width = xpPercent + '%';
+        document.getElementById('xpText').textContent = `${userData.xp || 0} / ${xpForNext} XP`;
+
+        // Verificar racha
+        checkStreak();
+
+        // Mapa de progreso
+        const completed = userData.completed || [];
+        const totalByLevel = { A1: 3, A2: 3, B1: 3, B2: 3 };
+        const levelCounts = { A1: 0, A2: 0, B1: 0, B2: 0 };
+        
+        completed.forEach(id => {
+            const lvl = id.split('-')[0].toUpperCase();
+            if (levelCounts[lvl] !== undefined) levelCounts[lvl]++;
+        });
+
+        // Actualizar nodos del mapa
+        function updateNode(level, count, total) {
+            const statusEl = document.getElementById(`status${level}`);
+            const nodeEl = document.getElementById(`node${level}`);
+            if (statusEl) statusEl.textContent = `${count}/${total}`;
+            
+            if (count >= total && nodeEl) {
+                nodeEl.classList.add('completed');
+            }
+        }
+
+        updateNode('A1', levelCounts.A1, 3);
+        
+        // Desbloquear niveles
+        if (levelCounts.A1 >= 2) {
+            document.getElementById('nodeA2').classList.add('unlocked');
+            document.getElementById('pathA1A2').classList.add('active');
+            updateNode('A2', levelCounts.A2, 3);
+        }
+        if (levelCounts.A2 >= 2) {
+            document.getElementById('nodeB1').classList.add('unlocked');
+            document.getElementById('pathA2B1').classList.add('active');
+            updateNode('B1', levelCounts.B1, 3);
+        }
+        if (levelCounts.B1 >= 2) {
+            document.getElementById('nodeB2').classList.add('unlocked');
+            document.getElementById('pathB1B2').classList.add('active');
+            updateNode('B2', levelCounts.B2, 3);
+        }
+
+        // Insignias
+        const allBadges = [
+            { id: 'first_read', icon: '📖', name: 'Primera Lectura', desc: 'Completa tu primera lectura', condition: () => completed.length >= 1 },
+            { id: 'streak_3', icon: '🔥', name: 'Racha de 3', desc: 'Lee 3 días seguidos', condition: () => (userData.streak || 0) >= 3 },
+            { id: 'no_hints', icon: '🧠', name: 'Mente Brillante', desc: 'Completa una lectura sin usar pistas', condition: () => false }, // Necesitaría tracking adicional
+            { id: 'level_master', icon: '⭐', name: 'Maestro A1', desc: 'Completa todas las lecturas A1', condition: () => levelCounts.A1 >= 3 },
+            { id: 'halfway', icon: '🏔️', name: 'A la Mitad', desc: 'Completa 6 lecturas', condition: () => completed.length >= 6 },
+            { id: 'explorer', icon: '🗺️', name: 'Explorador', desc: 'Desbloquea el nivel A2', condition: () => levelCounts.A1 >= 2 },
+            { id: 'night_owl', icon: '🦉', name: 'Nocturno', desc: 'Lee después de las 8 PM', condition: () => false },
+            { id: 'speed_reader', icon: '⚡', name: 'Veloz', desc: 'Completa una lectura en menos de 5 minutos', condition: () => false },
+        ];
+
+        const earnedBadges = userData.badges || [];
+        const badgesGrid = document.getElementById('badgesGrid');
+        
+        allBadges.forEach(badge => {
+            const isEarned = earnedBadges.includes(badge.id) || badge.condition();
+            const div = document.createElement('div');
+            div.className = `badge-item ${isEarned ? 'earned' : 'locked'}`;
+            div.innerHTML = `
+                <div class="badge-icon">${isEarned ? badge.icon : '🔒'}</div>
+                <div class="badge-name">${badge.name}</div>
+                <div class="badge-desc">${badge.desc}</div>
+            `;
+            if (isEarned && !earnedBadges.includes(badge.id)) {
+                earnedBadges.push(badge.id);
+            }
+            badgesGrid.appendChild(div);
+        });
+
+        userData.badges = earnedBadges;
+        document.getElementById('statBadges').textContent = earnedBadges.length;
+        localStorage.setItem('readwiseUser', JSON.stringify(userData));
+
+        // Actividad reciente
+        const activityList = document.getElementById('activityList');
+        if (completed.length > 0) {
+            activityList.innerHTML = '';
+            completed.slice(-5).reverse().forEach(id => {
+                const readingNames = {
+                    'a1-1': 'My Morning Routine', 'a1-2': 'At the Coffee Shop', 'a1-3': 'My Favorite Animal',
+                    'a2-1': 'A Trip to the Mountains', 'a2-2': 'My Best Friend', 'a2-3': 'A Day at the Beach',
+                    'b1-1': 'The Importance of Sleep', 'b1-2': 'Working from Home', 'b1-3': 'Learning a New Language',
+                    'b2-1': 'The Future of Education', 'b2-2': 'Climate Change', 'b2-3': 'The Art of Failure'
+                };
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `
+                    <span class="activity-icon">✅</span>
+                    <div class="activity-info">
+                        <span class="activity-title">${readingNames[id] || id}</span>
+                        <span class="activity-xp">+50 XP</span>
+                    </div>
+                `;
+                activityList.appendChild(item);
+            });
+        }
+
+        function checkStreak() {
+            const lastActive = new Date(userData.lastActive || Date.now());
+            const today = new Date();
+            const diffDays = Math.floor((today - lastActive) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                // Continúa racha
+            } else if (diffDays > 1) {
+                userData.streak = 0;
+            }
+            localStorage.setItem('readwiseUser', JSON.stringify(userData));
+        }
+
+        function goToLevel(level) {
+            const node = document.getElementById(`node${level}`);
+            if (!node.classList.contains('unlocked') && !node.classList.contains('completed')) {
+                // Animación de bloqueo
+                node.classList.add('shake');
+                setTimeout(() => node.classList.remove('shake'), 500);
+                return;
+            }
+            localStorage.setItem('userLevel', level);
+            window.location.href = 'dashboard.html';
+        }
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('readwiseTheme', next);
+        }
+
+        function logout() {
+            if (confirm('¿Seguro que quieres cambiar de usuario? Tu progreso se guardará.')) {
+                localStorage.removeItem('readwiseUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Tema
+        const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+</html>
