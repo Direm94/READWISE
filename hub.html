@@ -24,8 +24,8 @@
                 <div class="xp-fill" id="xpFill"></div>
                 <span id="xpText">0 XP</span>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-            <button class="icon-btn" onclick="logout()" title="Cambiar usuario">🚪</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌓</button>
+            <button class="icon-btn" id="logoutBtn">🚪</button>
         </div>
     </nav>
 
@@ -58,28 +58,28 @@
             <p class="section-subtitle">Selecciona tu próximo desafío de lectura</p>
             
             <div class="map-path">
-                <div class="map-node unlocked" onclick="goToLevel('A1')">
+                <div class="map-node unlocked" data-level="A1">
                     <div class="node-icon">🏔️</div>
                     <div class="node-label">Valle A1</div>
                     <div class="node-status" id="statusA1">0/3</div>
                     <div class="node-ring"></div>
                 </div>
                 <div class="path-line" id="pathA1A2"></div>
-                <div class="map-node" id="nodeA2" onclick="goToLevel('A2')">
+                <div class="map-node" data-level="A2" id="nodeA2">
                     <div class="node-icon">🌲</div>
                     <div class="node-label">Bosque A2</div>
                     <div class="node-status" id="statusA2">🔒</div>
                     <div class="node-ring"></div>
                 </div>
                 <div class="path-line" id="pathA2B1"></div>
-                <div class="map-node" id="nodeB1" onclick="goToLevel('B1')">
+                <div class="map-node" data-level="B1" id="nodeB1">
                     <div class="node-icon">🏰</div>
                     <div class="node-label">Fortaleza B1</div>
                     <div class="node-status" id="statusB1">🔒</div>
                     <div class="node-ring"></div>
                 </div>
                 <div class="path-line" id="pathB1B2"></div>
-                <div class="map-node" id="nodeB2" onclick="goToLevel('B2')">
+                <div class="map-node" data-level="B2" id="nodeB2">
                     <div class="node-icon">⭐</div>
                     <div class="node-label">Cima B2</div>
                     <div class="node-status" id="statusB2">🔒</div>
@@ -101,13 +101,37 @@
         </div>
     </div>
 
-    <!-- Toast de notificaciones -->
     <div id="toastNotification" class="toast-notification hidden"></div>
 
     <script>
-        // Crear partículas
+        // ============================================
+        // READWISE QUEST - HUB (VERSIÓN CORREGIDA)
+        // ============================================
+        
+        console.log('🎮 Hub page loaded');
+        
+        // --- VARIABLES GLOBALES ---
+        let userData = null;
+        let completed = [];
+        let earnedBadges = [];
+        
+        // --- FUNCIÓN PARA MOSTRAR TOAST ---
+        window.showToast = function(message, icon = '🎉') {
+            const toast = document.getElementById('toastNotification');
+            if (!toast) return;
+            toast.innerHTML = `${icon} ${message}`;
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        };
+        
+        // --- FUNCIÓN PARA CREAR PARTÍCULAS ---
         function createParticles() {
             const container = document.getElementById('particles');
+            if (!container) return;
             for (let i = 0; i < 20; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle';
@@ -117,50 +141,45 @@
                 container.appendChild(p);
             }
         }
-        createParticles();
-
-        // Función para mostrar notificaciones toast
-        function showToast(message, icon = '🎉') {
-            const toast = document.getElementById('toastNotification');
-            toast.innerHTML = `${icon} ${message}`;
-            toast.classList.remove('hidden');
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
-        }
-
-        // Cargar usuario
-        let userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
-        if (!userData.name) window.location.href = 'index.html';
-
-        // Títulos por nivel
+        
+        // --- TÍTULOS POR NIVEL ---
         const titles = {
             1: 'Novice Reader', 2: 'Curious Reader', 3: 'Active Reader',
             4: 'Dedicated Reader', 5: 'Avid Reader', 6: 'Book Explorer',
             7: 'Story Master', 8: 'Literature Knight', 9: 'Reading Wizard',
             10: 'Comprehension Sage', 11: 'Legendary Scholar', 12: 'Reading God'
         };
-
-        // Actualizar UI
-        document.getElementById('playerName').textContent = userData.name;
-        document.getElementById('playerAvatar').textContent = userData.avatar || '🦁';
-        document.getElementById('playerLevel').textContent = userData.level || 1;
-        document.getElementById('playerTitle').textContent = titles[userData.level] || titles[1];
-        document.getElementById('streakCount').textContent = userData.streak || 0;
-        document.getElementById('statXP').textContent = (userData.xp || 0).toLocaleString();
-        document.getElementById('statReadings').textContent = (userData.completed || []).length;
         
-        // XP bar
-        const xpForNext = (userData.level || 1) * 100;
-        const currentLevelXP = (userData.xp || 0) % 100;
-        const xpPercent = (currentLevelXP / 100) * 100;
-        document.getElementById('xpFill').style.width = xpPercent + '%';
-        document.getElementById('xpText').textContent = `${currentLevelXP} / 100 XP`;
-
-        // Verificar racha diaria
+        // --- NOMBRES DE LECTURAS ---
+        const readingNames = {
+            'a1-1': 'My Morning Routine', 'a1-2': 'At the Coffee Shop', 'a1-3': 'My Favorite Animal',
+            'a2-1': 'A Trip to the Mountains', 'a2-2': 'My Best Friend', 'a2-3': 'A Day at the Beach',
+            'b1-1': 'The Importance of Sleep', 'b1-2': 'Working from Home', 'b1-3': 'Learning a New Language',
+            'b2-1': 'The Future of Education', 'b2-2': 'Climate Change', 'b2-3': 'The Art of Failure'
+        };
+        
+        // --- FUNCIÓN PARA ACTUALIZAR LA UI DEL JUGADOR ---
+        function updatePlayerUI() {
+            if (!userData) return;
+            
+            document.getElementById('playerName').textContent = userData.name;
+            document.getElementById('playerAvatar').textContent = userData.avatar || '🦁';
+            document.getElementById('playerLevel').textContent = userData.level || 1;
+            document.getElementById('playerTitle').textContent = titles[userData.level] || titles[1];
+            document.getElementById('streakCount').textContent = userData.streak || 0;
+            document.getElementById('statXP').textContent = (userData.xp || 0).toLocaleString();
+            document.getElementById('statReadings').textContent = (userData.completed || []).length;
+            
+            const currentLevelXP = (userData.xp || 0) % 100;
+            const xpPercent = (currentLevelXP / 100) * 100;
+            document.getElementById('xpFill').style.width = xpPercent + '%';
+            document.getElementById('xpText').textContent = `${currentLevelXP} / 100 XP`;
+        }
+        
+        // --- FUNCIÓN PARA VERIFICAR Y ACTUALIZAR RACHA ---
         function checkAndUpdateStreak() {
+            if (!userData) return;
+            
             const lastActive = new Date(userData.lastActive || Date.now());
             const today = new Date();
             const diffDays = Math.floor((today - lastActive) / (1000 * 60 * 60 * 24));
@@ -177,111 +196,131 @@
             userData.lastActive = today.toISOString();
             localStorage.setItem('readwiseUser', JSON.stringify(userData));
         }
-        checkAndUpdateStreak();
-        document.getElementById('streakCount').textContent = userData.streak || 0;
-
-        // Mapa de progreso
-        const completed = userData.completed || [];
-        const totalByLevel = { A1: 3, A2: 3, B1: 3, B2: 3 };
-        const levelCounts = { A1: 0, A2: 0, B1: 0, B2: 0 };
         
-        completed.forEach(id => {
-            const lvl = id.split('-')[0].toUpperCase();
-            if (levelCounts[lvl] !== undefined) levelCounts[lvl]++;
-        });
-
-        function updateNode(level, count, total) {
-            const statusEl = document.getElementById(`status${level}`);
-            const nodeEl = document.getElementById(`node${level}`);
-            if (statusEl) statusEl.textContent = `${count}/${total}`;
+        // --- FUNCIÓN PARA ACTUALIZAR EL MAPA ---
+        function updateMap() {
+            completed = userData.completed || [];
+            const levelCounts = { A1: 0, A2: 0, B1: 0, B2: 0 };
             
-            if (count >= total && nodeEl) {
-                nodeEl.classList.add('completed');
-                nodeEl.classList.add('unlocked');
-            } else if (count > 0 && nodeEl) {
-                nodeEl.classList.add('unlocked');
-            }
-        }
-
-        updateNode('A1', levelCounts.A1, 3);
-        
-        // Desbloquear niveles (requiere 2 lecturas completadas del nivel anterior)
-        if (levelCounts.A1 >= 2) {
-            document.getElementById('nodeA2').classList.add('unlocked');
-            document.getElementById('pathA1A2').classList.add('active');
-            updateNode('A2', levelCounts.A2, 3);
-        }
-        if (levelCounts.A2 >= 2) {
-            document.getElementById('nodeB1').classList.add('unlocked');
-            document.getElementById('pathA2B1').classList.add('active');
-            updateNode('B1', levelCounts.B1, 3);
-        }
-        if (levelCounts.B1 >= 2) {
-            document.getElementById('nodeB2').classList.add('unlocked');
-            document.getElementById('pathB1B2').classList.add('active');
-            updateNode('B2', levelCounts.B2, 3);
-        }
-
-        // Insignias
-        const allBadges = [
-            { id: 'first_read', icon: '📖', name: 'Primera Lectura', desc: 'Completa tu primera lectura', condition: () => completed.length >= 1 },
-            { id: 'streak_3', icon: '🔥', name: 'Racha de 3', desc: 'Lee 3 días seguidos', condition: () => (userData.streak || 0) >= 3 },
-            { id: 'streak_7', icon: '⚡', name: 'Imparable', desc: 'Racha de 7 días', condition: () => (userData.streak || 0) >= 7 },
-            { id: 'a1_master', icon: '⭐', name: 'Maestro A1', desc: 'Completa todas las lecturas A1', condition: () => levelCounts.A1 >= 3 },
-            { id: 'a2_master', icon: '⭐', name: 'Explorador A2', desc: 'Completa todas las lecturas A2', condition: () => levelCounts.A2 >= 3 },
-            { id: 'halfway', icon: '🏔️', name: 'A la Mitad', desc: 'Completa 6 lecturas', condition: () => completed.length >= 6 },
-            { id: 'explorer', icon: '🗺️', name: 'Explorador', desc: 'Desbloquea el nivel A2', condition: () => levelCounts.A1 >= 2 },
-            { id: 'b1_explorer', icon: '🏰', name: 'Guerrero B1', desc: 'Desbloquea el nivel B1', condition: () => levelCounts.A2 >= 2 },
-            { id: 'scholar', icon: '🎓', name: 'Erudito', desc: 'Alcanza el nivel 5', condition: () => (userData.level || 1) >= 5 },
-            { id: 'legend', icon: '🏆', name: 'Leyenda', desc: 'Alcanza el nivel 10', condition: () => (userData.level || 1) >= 10 },
-        ];
-
-        let earnedBadges = userData.badges || [];
-        const badgesGrid = document.getElementById('badgesGrid');
-        let newBadgesUnlocked = [];
-        
-        allBadges.forEach(badge => {
-            const isEarned = earnedBadges.includes(badge.id) || badge.condition();
-            if (isEarned && !earnedBadges.includes(badge.id)) {
-                earnedBadges.push(badge.id);
-                newBadgesUnlocked.push(badge);
+            completed.forEach(id => {
+                const lvl = id.split('-')[0].toUpperCase();
+                if (levelCounts[lvl] !== undefined) levelCounts[lvl]++;
+            });
+            
+            // Actualizar nodo A1
+            const statusA1 = document.getElementById('statusA1');
+            if (statusA1) statusA1.textContent = `${levelCounts.A1}/3`;
+            if (levelCounts.A1 >= 3) {
+                const nodeA1 = document.querySelector('[data-level="A1"]');
+                if (nodeA1) nodeA1.classList.add('completed');
             }
             
-            const div = document.createElement('div');
-            div.className = `badge-item ${isEarned ? 'earned' : 'locked'}`;
-            div.innerHTML = `
-                <div class="badge-icon">${isEarned ? badge.icon : '🔒'}</div>
-                <div class="badge-name">${badge.name}</div>
-                <div class="badge-desc">${badge.desc}</div>
-            `;
-            badgesGrid.appendChild(div);
-        });
-
-        // Mostrar notificaciones de nuevas insignias
-        if (newBadgesUnlocked.length > 0) {
-            setTimeout(() => {
-                newBadgesUnlocked.forEach((badge, i) => {
-                    setTimeout(() => {
-                        showToast(`¡Nueva insignia desbloqueada! ${badge.name} ${badge.icon}`, '🏆');
-                    }, i * 1500);
-                });
-            }, 500);
+            // Desbloquear A2 (necesita 2 lecturas de A1)
+            const nodeA2 = document.getElementById('nodeA2');
+            const pathA1A2 = document.getElementById('pathA1A2');
+            if (levelCounts.A1 >= 2) {
+                if (nodeA2) nodeA2.classList.add('unlocked');
+                if (pathA1A2) pathA1A2.classList.add('active');
+                const statusA2 = document.getElementById('statusA2');
+                if (statusA2) statusA2.textContent = `${levelCounts.A2}/3`;
+                if (levelCounts.A2 >= 3 && nodeA2) nodeA2.classList.add('completed');
+            }
+            
+            // Desbloquear B1 (necesita 2 lecturas de A2)
+            const nodeB1 = document.getElementById('nodeB1');
+            const pathA2B1 = document.getElementById('pathA2B1');
+            if (levelCounts.A2 >= 2) {
+                if (nodeB1) nodeB1.classList.add('unlocked');
+                if (pathA2B1) pathA2B1.classList.add('active');
+                const statusB1 = document.getElementById('statusB1');
+                if (statusB1) statusB1.textContent = `${levelCounts.B1}/3`;
+                if (levelCounts.B1 >= 3 && nodeB1) nodeB1.classList.add('completed');
+            }
+            
+            // Desbloquear B2 (necesita 2 lecturas de B1)
+            const nodeB2 = document.getElementById('nodeB2');
+            const pathB1B2 = document.getElementById('pathB1B2');
+            if (levelCounts.B1 >= 2) {
+                if (nodeB2) nodeB2.classList.add('unlocked');
+                if (pathB1B2) pathB1B2.classList.add('active');
+                const statusB2 = document.getElementById('statusB2');
+                if (statusB2) statusB2.textContent = `${levelCounts.B2}/3`;
+                if (levelCounts.B2 >= 3 && nodeB2) nodeB2.classList.add('completed');
+            }
         }
-
-        userData.badges = earnedBadges;
-        document.getElementById('statBadges').textContent = earnedBadges.length;
-        localStorage.setItem('readwiseUser', JSON.stringify(userData));
-
-        // Actividad reciente
-        const readingNames = {
-            'a1-1': 'My Morning Routine', 'a1-2': 'At the Coffee Shop', 'a1-3': 'My Favorite Animal',
-            'a2-1': 'A Trip to the Mountains', 'a2-2': 'My Best Friend', 'a2-3': 'A Day at the Beach',
-            'b1-1': 'The Importance of Sleep', 'b1-2': 'Working from Home', 'b1-3': 'Learning a New Language',
-            'b2-1': 'The Future of Education', 'b2-2': 'Climate Change', 'b2-3': 'The Art of Failure'
-        };
-
-        const activityList = document.getElementById('activityList');
-        if (completed.length > 0) {
+        
+        // --- FUNCIÓN PARA ACTUALIZAR INSIGNIAS ---
+        function updateBadges() {
+            completed = userData.completed || [];
+            const levelCounts = { A1: 0, A2: 0, B1: 0, B2: 0 };
+            completed.forEach(id => {
+                const lvl = id.split('-')[0].toUpperCase();
+                if (levelCounts[lvl] !== undefined) levelCounts[lvl]++;
+            });
+            
+            const allBadges = [
+                { id: 'first_read', icon: '📖', name: 'Primera Lectura', desc: 'Completa tu primera lectura', condition: () => completed.length >= 1 },
+                { id: 'streak_3', icon: '🔥', name: 'Racha de 3', desc: 'Lee 3 días seguidos', condition: () => (userData.streak || 0) >= 3 },
+                { id: 'streak_7', icon: '⚡', name: 'Imparable', desc: 'Racha de 7 días', condition: () => (userData.streak || 0) >= 7 },
+                { id: 'a1_master', icon: '⭐', name: 'Maestro A1', desc: 'Completa todas las lecturas A1', condition: () => levelCounts.A1 >= 3 },
+                { id: 'a2_master', icon: '⭐', name: 'Explorador A2', desc: 'Completa todas las lecturas A2', condition: () => levelCounts.A2 >= 3 },
+                { id: 'halfway', icon: '🏔️', name: 'A la Mitad', desc: 'Completa 6 lecturas', condition: () => completed.length >= 6 },
+                { id: 'explorer', icon: '🗺️', name: 'Explorador', desc: 'Desbloquea el nivel A2', condition: () => levelCounts.A1 >= 2 },
+                { id: 'b1_explorer', icon: '🏰', name: 'Guerrero B1', desc: 'Desbloquea el nivel B1', condition: () => levelCounts.A2 >= 2 },
+                { id: 'scholar', icon: '🎓', name: 'Erudito', desc: 'Alcanza el nivel 5', condition: () => (userData.level || 1) >= 5 },
+                { id: 'legend', icon: '🏆', name: 'Leyenda', desc: 'Alcanza el nivel 10', condition: () => (userData.level || 1) >= 10 },
+            ];
+            
+            earnedBadges = userData.badges || [];
+            const badgesGrid = document.getElementById('badgesGrid');
+            if (!badgesGrid) return;
+            
+            badgesGrid.innerHTML = '';
+            let newBadges = [];
+            
+            allBadges.forEach(badge => {
+                const isEarned = earnedBadges.includes(badge.id) || badge.condition();
+                if (isEarned && !earnedBadges.includes(badge.id)) {
+                    earnedBadges.push(badge.id);
+                    newBadges.push(badge);
+                }
+                
+                const div = document.createElement('div');
+                div.className = `badge-item ${isEarned ? 'earned' : 'locked'}`;
+                div.innerHTML = `
+                    <div class="badge-icon">${isEarned ? badge.icon : '🔒'}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    <div class="badge-desc">${badge.desc}</div>
+                `;
+                badgesGrid.appendChild(div);
+            });
+            
+            if (newBadges.length > 0) {
+                userData.badges = earnedBadges;
+                localStorage.setItem('readwiseUser', JSON.stringify(userData));
+                setTimeout(() => {
+                    newBadges.forEach((badge, i) => {
+                        setTimeout(() => {
+                            showToast(`¡Nueva insignia! ${badge.name} ${badge.icon}`, '🏆');
+                        }, i * 1500);
+                    });
+                }, 500);
+            }
+            
+            document.getElementById('statBadges').textContent = earnedBadges.length;
+        }
+        
+        // --- FUNCIÓN PARA ACTUALIZAR ACTIVIDAD RECIENTE ---
+        function updateRecentActivity() {
+            completed = userData.completed || [];
+            const activityList = document.getElementById('activityList');
+            if (!activityList) return;
+            
+            if (completed.length === 0) {
+                activityList.innerHTML = '<p class="empty-state">¡Comienza tu primera lectura para ver tu progreso!</p>';
+                return;
+            }
+            
             activityList.innerHTML = '';
             completed.slice(-5).reverse().forEach(id => {
                 const item = document.createElement('div');
@@ -296,43 +335,137 @@
                 activityList.appendChild(item);
             });
         }
-
-        // Navegación de niveles
-        function goToLevel(level) {
-            const node = document.getElementById(`node${level}`);
-            if (!node.classList.contains('unlocked') && !node.classList.contains('completed')) {
-                node.classList.add('shake');
-                setTimeout(() => node.classList.remove('shake'), 500);
+        
+        // --- FUNCIÓN PRINCIPAL: GO TO LEVEL (GLOBAL) ---
+        window.goToLevel = function(level) {
+            console.log('🎯 goToLevel called with:', level);
+            
+            // Verificar si el nivel está desbloqueado
+            let isUnlocked = false;
+            
+            if (level === 'A1') {
+                isUnlocked = true;
+            } else if (level === 'A2') {
+                const levelCounts = { A1: 0 };
+                (userData.completed || []).forEach(id => {
+                    if (id.startsWith('a1')) levelCounts.A1++;
+                });
+                isUnlocked = levelCounts.A1 >= 2;
+            } else if (level === 'B1') {
+                const levelCounts = { A2: 0 };
+                (userData.completed || []).forEach(id => {
+                    if (id.startsWith('a2')) levelCounts.A2++;
+                });
+                isUnlocked = levelCounts.A2 >= 2;
+            } else if (level === 'B2') {
+                const levelCounts = { B1: 0 };
+                (userData.completed || []).forEach(id => {
+                    if (id.startsWith('b1')) levelCounts.B1++;
+                });
+                isUnlocked = levelCounts.B1 >= 2;
+            }
+            
+            if (!isUnlocked) {
+                console.log('🔒 Nivel bloqueado:', level);
                 showToast(`Completa más lecturas para desbloquear ${level}`, '🔒');
+                // Animación de shake en el nodo
+                const node = document.getElementById(`node${level}`);
+                if (node) {
+                    node.classList.add('shake');
+                    setTimeout(() => node.classList.remove('shake'), 500);
+                }
                 return;
             }
+            
+            console.log('✅ Nivel desbloqueado, redirigiendo a dashboard.html con level:', level);
             localStorage.setItem('userLevel', level);
             window.location.href = 'dashboard.html';
-        }
-
-        // Funciones de tema y logout
-        function toggleTheme() {
+        };
+        
+        // --- FUNCIÓN TOGGLE THEME (GLOBAL) ---
+        window.toggleTheme = function() {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', next);
             localStorage.setItem('readwiseTheme', next);
-        }
-
-        function logout() {
+            console.log('🎨 Theme changed to:', next);
+        };
+        
+        // --- FUNCIÓN LOGOUT (GLOBAL) ---
+        window.logout = function() {
             if (confirm('¿Seguro que quieres cambiar de usuario? Tu progreso se guardará.')) {
                 localStorage.removeItem('readwiseUser');
                 window.location.href = 'index.html';
             }
+        };
+        
+        // --- INICIALIZAR EVENTOS DEL MAPA ---
+        function initMapEvents() {
+            const nodes = document.querySelectorAll('.map-node');
+            nodes.forEach(node => {
+                const level = node.getAttribute('data-level');
+                if (level) {
+                    // Remover onclick del HTML y asignar con JS
+                    node.onclick = (e) => {
+                        e.stopPropagation();
+                        window.goToLevel(level);
+                    };
+                }
+            });
+            console.log('🗺️ Map events initialized, nodes found:', nodes.length);
         }
-
-        // Inicializar tema
-        const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
-
-        // Exponer funciones globales
-        window.goToLevel = goToLevel;
-        window.toggleTheme = toggleTheme;
-        window.logout = logout;
+        
+        // --- INICIALIZAR BOTONES ---
+        function initButtons() {
+            const themeBtn = document.getElementById('themeToggleBtn');
+            if (themeBtn) {
+                themeBtn.onclick = () => window.toggleTheme();
+            }
+            
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.onclick = () => window.logout();
+            }
+        }
+        
+        // --- CARGA DE USUARIO E INICIALIZACIÓN PRINCIPAL ---
+        function loadUserAndInit() {
+            const savedUser = localStorage.getItem('readwiseUser');
+            if (!savedUser) {
+                console.log('❌ No user found, redirecting to index.html');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                userData = JSON.parse(savedUser);
+                console.log('👤 User loaded:', userData.name);
+                
+                updatePlayerUI();
+                checkAndUpdateStreak();
+                updateMap();
+                updateBadges();
+                updateRecentActivity();
+                initMapEvents();
+                initButtons();
+                
+            } catch(e) {
+                console.error('Error loading user:', e);
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // --- TEMA OSCURO/CLARO ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            console.log('🎨 Theme initialized:', savedTheme);
+        }
+        
+        // --- INICIALIZACIÓN ---
+        createParticles();
+        initTheme();
+        loadUserAndInit();
     </script>
 </body>
 </html>
