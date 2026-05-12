@@ -3,40 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Readings - ReadWise</title>
+    <title>Desafíos — ReadWise Quest</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="dash-header">
-            <div class="top-bar">
-                <a href="level-select.html" class="back-btn">← Change Level</a>
-                <div class="user-info">
-                    <span id="userGreeting"></span>
-                    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-                </div>
+    <div class="particles" id="particles"></div>
+    
+    <nav class="top-nav glass">
+        <div class="nav-brand">
+            <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" class="nav-logo">
+            <span>ReadWise Quest</span>
+        </div>
+        <div class="nav-user">
+            <div class="xp-bar-mini">
+                <div class="xp-fill" id="xpFill"></div>
+                <span id="xpText">0 XP</span>
             </div>
-            <div class="dash-title">
-                <h1>📖 Choose a Reading</h1>
-                <p class="subtitle">Pick a text and start your interactive learning journey</p>
-            </div>
-        </header>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <button class="icon-btn" onclick="window.location.href='hub.html'" title="Volver al Hub">🏠</button>
+        </div>
+    </nav>
 
-        <main id="readingList" class="reading-grid">
-            <!-- Filled by JS -->
-        </main>
+    <div class="container">
+        <div class="level-header glass">
+            <button class="back-arrow" onclick="window.location.href='hub.html'">←</button>
+            <div class="level-info">
+                <h1 id="levelTitle">Valle A1</h1>
+                <p id="levelSubtitle">Desafíos para principiantes</p>
+            </div>
+            <div class="level-progress-circle" id="levelProgress">
+                <span>0/3</span>
+            </div>
+        </div>
+
+        <div class="challenges-grid" id="challengesGrid">
+            <!-- Generado por JS -->
+        </div>
     </div>
 
     <script>
-        // Check user
-        const userName = localStorage.getItem('readwiseUser');
-        if (!userName) window.location.href = 'index.html';
-        else document.getElementById('userGreeting').textContent = `👋 ${userName}`;
+        // Partículas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
 
-        // Theme
-        const currentTheme = localStorage.getItem('readwiseTheme') || 'light';
-        document.body.setAttribute('data-theme', currentTheme);
+        const userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        const level = localStorage.getItem('userLevel') || 'A1';
+        
+        const levelInfo = {
+            'A1': { name: 'Valle A1', subtitle: 'Desafíos para principiantes', icon: '🏔️', color: '#10b981' },
+            'A2': { name: 'Bosque A2', subtitle: 'Desafíos elementales', icon: '🌲', color: '#3b82f6' },
+            'B1': { name: 'Fortaleza B1', subtitle: 'Desafíos intermedios', icon: '🏰', color: '#8b5cf6' },
+            'B2': { name: 'Cima B2', subtitle: 'Desafíos avanzados', icon: '⭐', color: '#f59e0b' }
+        };
+
+        const info = levelInfo[level];
+        document.getElementById('levelTitle').textContent = info.name;
+        document.getElementById('levelSubtitle').textContent = info.subtitle;
+        document.querySelector('.level-header').style.borderLeft = `5px solid ${info.color}`;
+
+        // XP bar
+        const xpForNext = (userData.level || 1) * 100;
+        const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+        document.getElementById('xpFill').style.width = xpPercent + '%';
+        document.getElementById('xpText').textContent = `${userData.xp || 0} XP`;
+
+        const readings = {
+            'A1': [
+                { id: 'a1-1', title: 'My Morning Routine', desc: 'A simple description of daily routines', words: 120, time: '5 min', xp: 50, difficulty: '⭐', tags: ['Routines', 'Present Simple'] },
+                { id: 'a1-2', title: 'At the Coffee Shop', desc: 'Ordering food and drinks, everyday dialogues', words: 150, time: '6 min', xp: 50, difficulty: '⭐', tags: ['Food', 'Dialogues'] },
+                { id: 'a1-3', title: 'My Favorite Animal', desc: 'Describing animals with simple adjectives', words: 100, time: '4 min', xp: 50, difficulty: '⭐', tags: ['Animals', 'Description'] }
+            ],
+            'A2': [
+                { id: 'a2-1', title: 'A Trip to the Mountains', desc: 'Travel experiences and emotions', words: 200, time: '8 min', xp: 75, difficulty: '⭐⭐', tags: ['Travel', 'Past Simple'] },
+                { id: 'a2-2', title: 'My Best Friend', desc: 'Describing people and relationships', words: 180, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Descriptions', 'Friendship'] },
+                { id: 'a2-3', title: 'A Day at the Beach', desc: 'Summer activities and sensations', words: 190, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Summer', 'Senses'] }
+            ],
+            'B1': [
+                { id: 'b1-1', title: 'The Importance of Sleep', desc: 'Article about healthy habits', words: 350, time: '12 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Health', 'Advice'] },
+                { id: 'b1-2', title: 'Working from Home', desc: 'Opinions about remote work', words: 400, time: '14 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Work', 'Opinion'] },
+                { id: 'b1-3', title: 'Learning a New Language', desc: 'Strategies and experiences', words: 380, time: '13 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Languages', 'Experience'] }
+            ],
+            'B2': [
+                { id: 'b2-1', title: 'The Future of Education', desc: 'Analysis of educational trends', words: 600, time: '20 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Education', 'Future'] },
+                { id: 'b2-2', title: 'Climate Change: A Personal View', desc: 'Argumentative essay', words: 550, time: '18 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Environment', 'Persuasion'] },
+                { id: 'b2-3', title: 'The Art of Failure', desc: 'Reflection on failure and success', words: 580, time: '19 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Success', 'Reflection'] }
+            ]
+        };
+
+        const completed = userData.completed || [];
+        const levelReadings = readings[level] || [];
+        const completedInLevel = completed.filter(id => id.startsWith(level.toLowerCase())).length;
+
+        document.getElementById('levelProgress').innerHTML = `<span>${completedInLevel}/${levelReadings.length}</span>`;
+        if (completedInLevel === levelReadings.length) {
+            document.getElementById('levelProgress').classList.add('completed');
+        }
+
+        const grid = document.getElementById('challengesGrid');
+        levelReadings.forEach((reading, index) => {
+            const isDone = completed.includes(reading.id);
+            const isLocked = index > 0 && !completed.includes(levelReadings[index - 1].id);
+            
+            const card = document.createElement('div');
+            card.className = `challenge-card glass ${isDone ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+            
+            card.innerHTML = `
+                <div class="challenge-header">
+                    <div class="challenge-number">#${index + 1}</div>
+                    <div class="challenge-xp">+${reading.xp} XP</div>
+                </div>
+                <div class="challenge-icon">${isDone ? '🏆' : info.icon}</div>
+                <h3 class="challenge-title">${reading.title}</h3>
+                <p class="challenge-desc">${reading.desc}</p>
+                <div class="challenge-meta">
+                    <span>📝 ${reading.words} words</span>
+                    <span>⏱️ ${reading.time}</span>
+                    <span class="difficulty">${reading.difficulty}</span>
+                </div>
+                <div class="challenge-tags">
+                    ${reading.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                </div>
+                <button class="challenge-btn ${isDone ? 'done' : isLocked ? 'locked' : ''}" 
+                    onclick="${isLocked ? '' : `startChallenge('${reading.id}')`}">
+                    ${isDone ? '✅ Completado' : isLocked ? '🔒 Bloqueado' : '⚔️ Iniciar Desafío'}
+                </button>
+                ${isLocked ? '<div class="lock-overlay"><span>Completa el desafío anterior</span></div>' : ''}
+            `;
+            
+            grid.appendChild(card);
+        });
+
+        function startChallenge(id) {
+            localStorage.setItem('currentReading', id);
+            window.location.href = 'reader.html';
+        }
+
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
@@ -44,142 +157,8 @@
             localStorage.setItem('readwiseTheme', next);
         }
 
-        const readings = {
-            'A1': [
-                {
-                    id: 'a1-1',
-                    title: 'My Morning Routine',
-                    description: 'A simple description of daily routines with basic vocabulary',
-                    words: 120,
-                    time: '5 min',
-                    tags: ['Routines', 'Present Simple', 'Family']
-                },
-                {
-                    id: 'a1-2',
-                    title: 'At the Coffee Shop',
-                    description: 'Ordering food and drinks, everyday dialogues',
-                    words: 150,
-                    time: '6 min',
-                    tags: ['Food', 'Dialogues', 'Services']
-                },
-                {
-                    id: 'a1-3',
-                    title: 'My Favorite Animal',
-                    description: 'Describing animals with simple adjectives',
-                    words: 100,
-                    time: '4 min',
-                    tags: ['Animals', 'Description', 'Adjectives']
-                }
-            ],
-            'A2': [
-                {
-                    id: 'a2-1',
-                    title: 'A Trip to the Mountains',
-                    description: 'Travel experiences, place descriptions and emotions',
-                    words: 200,
-                    time: '8 min',
-                    tags: ['Travel', 'Past Simple', 'Nature']
-                },
-                {
-                    id: 'a2-2',
-                    title: 'My Best Friend',
-                    description: 'Describing people, relationships and activities together',
-                    words: 180,
-                    time: '7 min',
-                    tags: ['Descriptions', 'Adjectives', 'Friendship']
-                },
-                {
-                    id: 'a2-3',
-                    title: 'A Day at the Beach',
-                    description: 'Summer activities, weather and sensations',
-                    words: 190,
-                    time: '7 min',
-                    tags: ['Summer', 'Activities', 'Senses']
-                }
-            ],
-            'B1': [
-                {
-                    id: 'b1-1',
-                    title: 'The Importance of Sleep',
-                    description: 'Article about healthy habits and practical advice',
-                    words: 350,
-                    time: '12 min',
-                    tags: ['Health', 'Connectors', 'Advice']
-                },
-                {
-                    id: 'b1-2',
-                    title: 'Working from Home',
-                    description: 'Opinions about remote work, advantages and disadvantages',
-                    words: 400,
-                    time: '14 min',
-                    tags: ['Work', 'Opinion', 'Comparison']
-                },
-                {
-                    id: 'b1-3',
-                    title: 'Learning a New Language',
-                    description: 'Strategies and personal experiences in language learning',
-                    words: 380,
-                    time: '13 min',
-                    tags: ['Languages', 'Advice', 'Experience']
-                }
-            ],
-            'B2': [
-                {
-                    id: 'b2-1',
-                    title: 'The Future of Education',
-                    description: 'Analysis of educational trends and technology in classrooms',
-                    words: 600,
-                    time: '20 min',
-                    tags: ['Education', 'Technology', 'Future']
-                },
-                {
-                    id: 'b2-2',
-                    title: 'Climate Change: A Personal View',
-                    description: 'Argumentative essay about individual responsibility',
-                    words: 550,
-                    time: '18 min',
-                    tags: ['Environment', 'Persuasion', 'Opinion']
-                },
-                {
-                    id: 'b2-3',
-                    title: 'The Art of Failure',
-                    description: 'Reflection on failure as part of success',
-                    words: 580,
-                    time: '19 min',
-                    tags: ['Success', 'Reflection', 'Motivation']
-                }
-            ]
-        };
-
-        const level = localStorage.getItem('userLevel') || 'A1';
-        const completed = JSON.parse(localStorage.getItem('readwiseCompleted') || '[]');
-
-        const list = document.getElementById('readingList');
-        readings[level].forEach(reading => {
-            const isDone = completed.includes(reading.id);
-            const card = document.createElement('div');
-            card.className = `reading-card ${isDone ? 'completed' : ''}`;
-            card.innerHTML = `
-                <div class="card-badge">${isDone ? '✅ Done' : level}</div>
-                <div class="card-header">
-                    <h3>${reading.title}</h3>
-                    <span class="word-count">📝 ${reading.words} words · ⏱️ ${reading.time}</span>
-                </div>
-                <p class="card-description">${reading.description}</p>
-                <div class="tags">
-                    ${reading.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-                <button class="start-btn" onclick="startReading('${reading.id}')">
-                    ${isDone ? '🔄 Read Again' : '📖 Start Reading'}
-                </button>
-            `;
-            list.appendChild(card);
-        });
-
-        function startReading(id) {
-            localStorage.setItem('currentReading', id);
-            window.location.href = 'reader.html';
-        }
+        const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
     </script>
 </body>
 </html>
