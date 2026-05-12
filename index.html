@@ -3,60 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReadWise - Comprensión Lectora Interactiva</title>
+    <title>ReadWise - Welcome</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
 </head>
 <body>
     <div class="container">
-        <header class="main-header">
+        <header class="welcome-header">
             <div class="logo-container">
                 <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="ReadWise Logo" class="app-logo">
                 <div class="logo-text">
                     <h1>ReadWise</h1>
-                    <p>Comprensión Lectora Interactiva</p>
+                    <p>Interactive Reading Comprehension</p>
                 </div>
             </div>
         </header>
 
-        <main class="level-selector">
-            <h2>🎯 Selecciona tu nivel de inglés</h2>
-            <p class="subtitle">Elige el nivel que mejor se adapte a ti y comienza a leer</p>
-            
-            <div class="levels">
-                <button class="level-btn" onclick="selectLevel('A1')">
-                    <span class="level-tag">A1</span>
-                    <span class="level-desc">Principiante</span>
-                    <small>Vocabulario básico, frases simples</small>
+        <main class="welcome-card">
+            <div class="welcome-content">
+                <h2>👋 Welcome to ReadWise!</h2>
+                <p class="welcome-desc">
+                    This app helps you <strong>understand</strong> English texts, not just read them. 
+                    We guide you to find answers using <em>your own knowledge</em>.
+                </p>
+                
+                <div class="name-form">
+                    <label for="studentName">What's your name?</label>
+                    <input type="text" id="studentName" placeholder="Type your name here..." maxlength="30">
+                    <p class="hint">This will be your username. We'll remember you!</p>
+                </div>
+
+                <button class="start-btn" onclick="saveName()">
+                    🚀 Start Learning
                 </button>
-                <button class="level-btn" onclick="selectLevel('A2')">
-                    <span class="level-tag">A2</span>
-                    <span class="level-desc">Elemental</span>
-                    <small>Descripciones, rutinas, pasado simple</small>
-                </button>
-                <button class="level-btn" onclick="selectLevel('B1')">
-                    <span class="level-tag">B1</span>
-                    <span class="level-desc">Intermedio</span>
-                    <small>Opiniones, experiencias, textos más largos</small>
-                </button>
-                <button class="level-btn" onclick="selectLevel('B2')">
-                    <span class="level-tag">B2</span>
-                    <span class="level-desc">Intermedio-Alto</span>
-                    <small>Artículos complejos, argumentación</small>
-                </button>
+            </div>
+
+            <div class="features-preview">
+                <div class="feature-item">
+                    <span>📖</span>
+                    <p>Read at your level</p>
+                </div>
+                <div class="feature-item">
+                    <span>🎯</span>
+                    <p>Interactive questions</p>
+                </div>
+                <div class="feature-item">
+                    <span>💡</span>
+                    <p>Hints, not answers</p>
+                </div>
+                <div class="feature-item">
+                    <span>🔊</span>
+                    <p>Listen & pronounce</p>
+                </div>
             </div>
         </main>
 
         <footer class="app-footer">
-            <p>📚 Aprende inglés leyendo, no memorizando</p>
+            <p>Empowering students through reading comprehension</p>
         </footer>
     </div>
 
     <script>
-        function selectLevel(level) {
-            localStorage.setItem('userLevel', level);
-            window.location.href = 'dashboard.html';
+        // Check if user already exists
+        const savedName = localStorage.getItem('readwiseUser');
+        if (savedName) {
+            window.location.href = 'level-select.html';
         }
+
+        function saveName() {
+            const name = document.getElementById('studentName').value.trim();
+            if (name.length < 2) {
+                alert('Please enter your name (at least 2 characters)');
+                return;
+            }
+            localStorage.setItem('readwiseUser', name);
+            localStorage.setItem('readwiseJoined', new Date().toISOString());
+            window.location.href = 'level-select.html';
+        }
+
+        // Allow Enter key
+        document.getElementById('studentName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') saveName();
+        });
     </script>
 </body>
 </html>
