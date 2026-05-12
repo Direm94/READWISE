@@ -38,13 +38,12 @@
             </div>
         </div>
 
-        <div class="challenges-grid" id="challengesGrid">
-            <!-- Generado por JS -->
-        </div>
+        <div class="challenges-grid" id="challengesGrid"></div>
     </div>
 
     <script>
-        // Partículas
+        createParticles();
+        
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 15; i++) {
@@ -56,9 +55,10 @@
                 container.appendChild(p);
             }
         }
-        createParticles();
 
-        const userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        let userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        if (!userData.name) window.location.href = 'index.html';
+        
         const level = localStorage.getItem('userLevel') || 'A1';
         
         const levelInfo = {
@@ -69,36 +69,37 @@
         };
 
         const info = levelInfo[level];
-        document.getElementById('levelTitle').textContent = info.name;
+        document.getElementById('levelTitle').innerHTML = `${info.icon} ${info.name}`;
         document.getElementById('levelSubtitle').textContent = info.subtitle;
         document.querySelector('.level-header').style.borderLeft = `5px solid ${info.color}`;
 
         // XP bar
-        const xpForNext = (userData.level || 1) * 100;
-        const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+        const currentLevelXP = (userData.xp || 0) % 100;
+        const xpPercent = (currentLevelXP / 100) * 100;
         document.getElementById('xpFill').style.width = xpPercent + '%';
-        document.getElementById('xpText').textContent = `${userData.xp || 0} XP`;
+        document.getElementById('xpText').textContent = `${currentLevelXP} / 100 XP`;
 
+        // Base de datos de lecturas
         const readings = {
             'A1': [
-                { id: 'a1-1', title: 'My Morning Routine', desc: 'A simple description of daily routines', words: 120, time: '5 min', xp: 50, difficulty: '⭐', tags: ['Routines', 'Present Simple'] },
-                { id: 'a1-2', title: 'At the Coffee Shop', desc: 'Ordering food and drinks, everyday dialogues', words: 150, time: '6 min', xp: 50, difficulty: '⭐', tags: ['Food', 'Dialogues'] },
-                { id: 'a1-3', title: 'My Favorite Animal', desc: 'Describing animals with simple adjectives', words: 100, time: '4 min', xp: 50, difficulty: '⭐', tags: ['Animals', 'Description'] }
+                { id: 'a1-1', title: 'My Morning Routine', desc: 'Una descripción simple de rutinas diarias', words: 120, time: '5 min', xp: 50, difficulty: '⭐', tags: ['Routines', 'Present Simple'] },
+                { id: 'a1-2', title: 'At the Coffee Shop', desc: 'Pedir comida y bebidas, diálogos cotidianos', words: 150, time: '6 min', xp: 50, difficulty: '⭐', tags: ['Food', 'Dialogues'] },
+                { id: 'a1-3', title: 'My Favorite Animal', desc: 'Describiendo animales con adjetivos simples', words: 100, time: '4 min', xp: 50, difficulty: '⭐', tags: ['Animals', 'Description'] }
             ],
             'A2': [
-                { id: 'a2-1', title: 'A Trip to the Mountains', desc: 'Travel experiences and emotions', words: 200, time: '8 min', xp: 75, difficulty: '⭐⭐', tags: ['Travel', 'Past Simple'] },
-                { id: 'a2-2', title: 'My Best Friend', desc: 'Describing people and relationships', words: 180, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Descriptions', 'Friendship'] },
-                { id: 'a2-3', title: 'A Day at the Beach', desc: 'Summer activities and sensations', words: 190, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Summer', 'Senses'] }
+                { id: 'a2-1', title: 'A Trip to the Mountains', desc: 'Experiencias de viaje y emociones', words: 200, time: '8 min', xp: 75, difficulty: '⭐⭐', tags: ['Travel', 'Past Simple'] },
+                { id: 'a2-2', title: 'My Best Friend', desc: 'Describiendo personas y relaciones', words: 180, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Descriptions', 'Friendship'] },
+                { id: 'a2-3', title: 'A Day at the Beach', desc: 'Actividades de verano y sensaciones', words: 190, time: '7 min', xp: 75, difficulty: '⭐⭐', tags: ['Summer', 'Senses'] }
             ],
             'B1': [
-                { id: 'b1-1', title: 'The Importance of Sleep', desc: 'Article about healthy habits', words: 350, time: '12 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Health', 'Advice'] },
-                { id: 'b1-2', title: 'Working from Home', desc: 'Opinions about remote work', words: 400, time: '14 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Work', 'Opinion'] },
-                { id: 'b1-3', title: 'Learning a New Language', desc: 'Strategies and experiences', words: 380, time: '13 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Languages', 'Experience'] }
+                { id: 'b1-1', title: 'The Importance of Sleep', desc: 'Artículo sobre hábitos saludables', words: 350, time: '12 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Health', 'Advice'] },
+                { id: 'b1-2', title: 'Working from Home', desc: 'Opiniones sobre el trabajo remoto', words: 400, time: '14 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Work', 'Opinion'] },
+                { id: 'b1-3', title: 'Learning a New Language', desc: 'Estrategias y experiencias', words: 380, time: '13 min', xp: 100, difficulty: '⭐⭐⭐', tags: ['Languages', 'Experience'] }
             ],
             'B2': [
-                { id: 'b2-1', title: 'The Future of Education', desc: 'Analysis of educational trends', words: 600, time: '20 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Education', 'Future'] },
-                { id: 'b2-2', title: 'Climate Change: A Personal View', desc: 'Argumentative essay', words: 550, time: '18 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Environment', 'Persuasion'] },
-                { id: 'b2-3', title: 'The Art of Failure', desc: 'Reflection on failure and success', words: 580, time: '19 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Success', 'Reflection'] }
+                { id: 'b2-1', title: 'The Future of Education', desc: 'Análisis de tendencias educativas', words: 600, time: '20 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Education', 'Future'] },
+                { id: 'b2-2', title: 'Climate Change: A Personal View', desc: 'Ensayo argumentativo', words: 550, time: '18 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Environment', 'Persuasion'] },
+                { id: 'b2-3', title: 'The Art of Failure', desc: 'Reflexión sobre el fracaso y el éxito', words: 580, time: '19 min', xp: 150, difficulty: '⭐⭐⭐⭐', tags: ['Success', 'Reflection'] }
             ]
         };
 
@@ -112,6 +113,12 @@
         }
 
         const grid = document.getElementById('challengesGrid');
+        
+        function startChallenge(readingId) {
+            localStorage.setItem('currentReading', readingId);
+            window.location.href = 'reader.html';
+        }
+
         levelReadings.forEach((reading, index) => {
             const isDone = completed.includes(reading.id);
             const isLocked = index > 0 && !completed.includes(levelReadings[index - 1].id);
@@ -145,11 +152,6 @@
             grid.appendChild(card);
         });
 
-        function startChallenge(id) {
-            localStorage.setItem('currentReading', id);
-            window.location.href = 'reader.html';
-        }
-
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
@@ -159,6 +161,9 @@
 
         const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
         document.body.setAttribute('data-theme', savedTheme);
+
+        window.startChallenge = startChallenge;
+        window.toggleTheme = toggleTheme;
     </script>
 </body>
 </html>
