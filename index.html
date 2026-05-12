@@ -47,9 +47,7 @@
         <div class="onboarding-card glass">
             <div class="avatar-selection">
                 <h3>👤 Elige tu avatar</h3>
-                <div class="avatar-grid" id="avatarGrid">
-                    <!-- Avatares generados por JS -->
-                </div>
+                <div class="avatar-grid" id="avatarGrid"></div>
             </div>
 
             <div class="name-input-section">
@@ -134,7 +132,6 @@
             requestAnimationFrame(step);
         }
 
-        // Simular usuarios (en producción vendría de backend)
         setTimeout(() => animateCounter(document.getElementById('totalUsers'), 2847), 500);
 
         // Verificar usuario existente
@@ -172,7 +169,6 @@
                 joined: new Date().toISOString()
             };
 
-            // Si ya existe, preservar progreso
             const existing = localStorage.getItem('readwiseUser');
             if (existing) {
                 const old = JSON.parse(existing);
@@ -187,7 +183,6 @@
 
             localStorage.setItem('readwiseUser', JSON.stringify(userData));
             
-            // Animación de transición
             document.body.style.transition = 'opacity 0.5s';
             document.body.style.opacity = '0';
             setTimeout(() => window.location.href = 'hub.html', 500);
@@ -199,7 +194,6 @@
             setTimeout(() => wrapper.classList.remove('shake'), 500);
         }
 
-        // Enter key
         document.getElementById('studentName').addEventListener('keypress', e => {
             if (e.key === 'Enter') startAdventure();
         });
