@@ -30,7 +30,6 @@
     </nav>
 
     <div class="container hub-container">
-        <!-- Perfil del jugador -->
         <div class="player-card glass">
             <div class="player-avatar" id="playerAvatar">🦁</div>
             <div class="player-info">
@@ -54,7 +53,6 @@
             </div>
         </div>
 
-        <!-- Mapa de aventura -->
         <div class="adventure-map glass">
             <h3 class="section-title">🗺️ Mapa de Aventura</h3>
             <p class="section-subtitle">Selecciona tu próximo desafío de lectura</p>
@@ -90,15 +88,11 @@
             </div>
         </div>
 
-        <!-- Insignias -->
         <div class="badges-section glass">
             <h3 class="section-title">🏆 Tus Insignias</h3>
-            <div class="badges-grid" id="badgesGrid">
-                <!-- Generado por JS -->
-            </div>
+            <div class="badges-grid" id="badgesGrid"></div>
         </div>
 
-        <!-- Logros recientes -->
         <div class="recent-activity glass">
             <h3 class="section-title">📊 Actividad Reciente</h3>
             <div id="activityList" class="activity-list">
@@ -107,8 +101,11 @@
         </div>
     </div>
 
+    <!-- Toast de notificaciones -->
+    <div id="toastNotification" class="toast-notification hidden"></div>
+
     <script>
-        // Partículas
+        // Crear partículas
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 20; i++) {
@@ -122,8 +119,20 @@
         }
         createParticles();
 
+        // Función para mostrar notificaciones toast
+        function showToast(message, icon = '🎉') {
+            const toast = document.getElementById('toastNotification');
+            toast.innerHTML = `${icon} ${message}`;
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
         // Cargar usuario
-        const userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
+        let userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
         if (!userData.name) window.location.href = 'index.html';
 
         // Títulos por nivel
@@ -145,12 +154,31 @@
         
         // XP bar
         const xpForNext = (userData.level || 1) * 100;
-        const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+        const currentLevelXP = (userData.xp || 0) % 100;
+        const xpPercent = (currentLevelXP / 100) * 100;
         document.getElementById('xpFill').style.width = xpPercent + '%';
-        document.getElementById('xpText').textContent = `${userData.xp || 0} / ${xpForNext} XP`;
+        document.getElementById('xpText').textContent = `${currentLevelXP} / 100 XP`;
 
-        // Verificar racha
-        checkStreak();
+        // Verificar racha diaria
+        function checkAndUpdateStreak() {
+            const lastActive = new Date(userData.lastActive || Date.now());
+            const today = new Date();
+            const diffDays = Math.floor((today - lastActive) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                userData.streak = (userData.streak || 0) + 1;
+                showToast(`¡Racha de ${userData.streak} días! 🔥`, '🔥');
+            } else if (diffDays > 1) {
+                if (userData.streak > 0) {
+                    showToast(`¡Tu racha de ${userData.streak} días terminó! Vuelve a empezar 📖`, '💔');
+                }
+                userData.streak = 0;
+            }
+            userData.lastActive = today.toISOString();
+            localStorage.setItem('readwiseUser', JSON.stringify(userData));
+        }
+        checkAndUpdateStreak();
+        document.getElementById('streakCount').textContent = userData.streak || 0;
 
         // Mapa de progreso
         const completed = userData.completed || [];
@@ -162,7 +190,6 @@
             if (levelCounts[lvl] !== undefined) levelCounts[lvl]++;
         });
 
-        // Actualizar nodos del mapa
         function updateNode(level, count, total) {
             const statusEl = document.getElementById(`status${level}`);
             const nodeEl = document.getElementById(`node${level}`);
@@ -170,12 +197,15 @@
             
             if (count >= total && nodeEl) {
                 nodeEl.classList.add('completed');
+                nodeEl.classList.add('unlocked');
+            } else if (count > 0 && nodeEl) {
+                nodeEl.classList.add('unlocked');
             }
         }
 
         updateNode('A1', levelCounts.A1, 3);
         
-        // Desbloquear niveles
+        // Desbloquear niveles (requiere 2 lecturas completadas del nivel anterior)
         if (levelCounts.A1 >= 2) {
             document.getElementById('nodeA2').classList.add('unlocked');
             document.getElementById('pathA1A2').classList.add('active');
@@ -196,19 +226,27 @@
         const allBadges = [
             { id: 'first_read', icon: '📖', name: 'Primera Lectura', desc: 'Completa tu primera lectura', condition: () => completed.length >= 1 },
             { id: 'streak_3', icon: '🔥', name: 'Racha de 3', desc: 'Lee 3 días seguidos', condition: () => (userData.streak || 0) >= 3 },
-            { id: 'no_hints', icon: '🧠', name: 'Mente Brillante', desc: 'Completa una lectura sin usar pistas', condition: () => false }, // Necesitaría tracking adicional
-            { id: 'level_master', icon: '⭐', name: 'Maestro A1', desc: 'Completa todas las lecturas A1', condition: () => levelCounts.A1 >= 3 },
+            { id: 'streak_7', icon: '⚡', name: 'Imparable', desc: 'Racha de 7 días', condition: () => (userData.streak || 0) >= 7 },
+            { id: 'a1_master', icon: '⭐', name: 'Maestro A1', desc: 'Completa todas las lecturas A1', condition: () => levelCounts.A1 >= 3 },
+            { id: 'a2_master', icon: '⭐', name: 'Explorador A2', desc: 'Completa todas las lecturas A2', condition: () => levelCounts.A2 >= 3 },
             { id: 'halfway', icon: '🏔️', name: 'A la Mitad', desc: 'Completa 6 lecturas', condition: () => completed.length >= 6 },
             { id: 'explorer', icon: '🗺️', name: 'Explorador', desc: 'Desbloquea el nivel A2', condition: () => levelCounts.A1 >= 2 },
-            { id: 'night_owl', icon: '🦉', name: 'Nocturno', desc: 'Lee después de las 8 PM', condition: () => false },
-            { id: 'speed_reader', icon: '⚡', name: 'Veloz', desc: 'Completa una lectura en menos de 5 minutos', condition: () => false },
+            { id: 'b1_explorer', icon: '🏰', name: 'Guerrero B1', desc: 'Desbloquea el nivel B1', condition: () => levelCounts.A2 >= 2 },
+            { id: 'scholar', icon: '🎓', name: 'Erudito', desc: 'Alcanza el nivel 5', condition: () => (userData.level || 1) >= 5 },
+            { id: 'legend', icon: '🏆', name: 'Leyenda', desc: 'Alcanza el nivel 10', condition: () => (userData.level || 1) >= 10 },
         ];
 
-        const earnedBadges = userData.badges || [];
+        let earnedBadges = userData.badges || [];
         const badgesGrid = document.getElementById('badgesGrid');
+        let newBadgesUnlocked = [];
         
         allBadges.forEach(badge => {
             const isEarned = earnedBadges.includes(badge.id) || badge.condition();
+            if (isEarned && !earnedBadges.includes(badge.id)) {
+                earnedBadges.push(badge.id);
+                newBadgesUnlocked.push(badge);
+            }
+            
             const div = document.createElement('div');
             div.className = `badge-item ${isEarned ? 'earned' : 'locked'}`;
             div.innerHTML = `
@@ -216,27 +254,36 @@
                 <div class="badge-name">${badge.name}</div>
                 <div class="badge-desc">${badge.desc}</div>
             `;
-            if (isEarned && !earnedBadges.includes(badge.id)) {
-                earnedBadges.push(badge.id);
-            }
             badgesGrid.appendChild(div);
         });
+
+        // Mostrar notificaciones de nuevas insignias
+        if (newBadgesUnlocked.length > 0) {
+            setTimeout(() => {
+                newBadgesUnlocked.forEach((badge, i) => {
+                    setTimeout(() => {
+                        showToast(`¡Nueva insignia desbloqueada! ${badge.name} ${badge.icon}`, '🏆');
+                    }, i * 1500);
+                });
+            }, 500);
+        }
 
         userData.badges = earnedBadges;
         document.getElementById('statBadges').textContent = earnedBadges.length;
         localStorage.setItem('readwiseUser', JSON.stringify(userData));
 
         // Actividad reciente
+        const readingNames = {
+            'a1-1': 'My Morning Routine', 'a1-2': 'At the Coffee Shop', 'a1-3': 'My Favorite Animal',
+            'a2-1': 'A Trip to the Mountains', 'a2-2': 'My Best Friend', 'a2-3': 'A Day at the Beach',
+            'b1-1': 'The Importance of Sleep', 'b1-2': 'Working from Home', 'b1-3': 'Learning a New Language',
+            'b2-1': 'The Future of Education', 'b2-2': 'Climate Change', 'b2-3': 'The Art of Failure'
+        };
+
         const activityList = document.getElementById('activityList');
         if (completed.length > 0) {
             activityList.innerHTML = '';
             completed.slice(-5).reverse().forEach(id => {
-                const readingNames = {
-                    'a1-1': 'My Morning Routine', 'a1-2': 'At the Coffee Shop', 'a1-3': 'My Favorite Animal',
-                    'a2-1': 'A Trip to the Mountains', 'a2-2': 'My Best Friend', 'a2-3': 'A Day at the Beach',
-                    'b1-1': 'The Importance of Sleep', 'b1-2': 'Working from Home', 'b1-3': 'Learning a New Language',
-                    'b2-1': 'The Future of Education', 'b2-2': 'Climate Change', 'b2-3': 'The Art of Failure'
-                };
                 const item = document.createElement('div');
                 item.className = 'activity-item';
                 item.innerHTML = `
@@ -250,31 +297,20 @@
             });
         }
 
-        function checkStreak() {
-            const lastActive = new Date(userData.lastActive || Date.now());
-            const today = new Date();
-            const diffDays = Math.floor((today - lastActive) / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) {
-                // Continúa racha
-            } else if (diffDays > 1) {
-                userData.streak = 0;
-            }
-            localStorage.setItem('readwiseUser', JSON.stringify(userData));
-        }
-
+        // Navegación de niveles
         function goToLevel(level) {
             const node = document.getElementById(`node${level}`);
             if (!node.classList.contains('unlocked') && !node.classList.contains('completed')) {
-                // Animación de bloqueo
                 node.classList.add('shake');
                 setTimeout(() => node.classList.remove('shake'), 500);
+                showToast(`Completa más lecturas para desbloquear ${level}`, '🔒');
                 return;
             }
             localStorage.setItem('userLevel', level);
             window.location.href = 'dashboard.html';
         }
 
+        // Funciones de tema y logout
         function toggleTheme() {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
@@ -289,9 +325,14 @@
             }
         }
 
-        // Tema
+        // Inicializar tema
         const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
         document.body.setAttribute('data-theme', savedTheme);
+
+        // Exponer funciones globales
+        window.goToLevel = goToLevel;
+        window.toggleTheme = toggleTheme;
+        window.logout = logout;
     </script>
 </body>
 </html>
