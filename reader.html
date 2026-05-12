@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lectura Interactiva - ReadWise</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+</head>
+<body>
+    <div class="container">
+        <header class="reader-header">
+            <div class="nav">
+                <a href="dashboard.html" class="back-btn">← Volver a lecturas</a>
+                <div class="logo-small">
+                    <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="Logo" class="logo-img-small">
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+                <span class="progress-text">Progreso de lectura</span>
+            </div>
+            <h1 id="readingTitle"></h1>
+        </header>
+
+        <main class="reader-layout">
+            <aside class="tools-panel">
+                <div class="tool-section">
+                    <h3>🎯 Herramientas</h3>
+                    <button class="tool-btn" onclick="toggleHighlight()" id="highlightBtn">
+                        ✨ Resaltar ideas clave
+                    </button>
+                    <button class="tool-btn" onclick="showVocabulary()">
+                        📚 Vocabulario útil
+                    </button>
+                    <button class="tool-btn" onclick="toggleTranslation()">
+                        🌐 Mostrar traducción (palabras difíciles)
+                    </button>
+                </div>
+                
+                <div class="tool-section">
+                    <h3>💡 Ayudas</h3>
+                    <button class="tool-btn hint-btn" onclick="showHint()">
+                        🤔 Dame una pista
+                    </button>
+                    <div id="hintBox" class="hint-box hidden"></div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>📝 Mi progreso</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="wordsRead">0</span>
+                            <span class="stat-label">palabras leídas</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="clicksHelp">0</span>
+                            <span class="stat-label">ayudas usadas</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <article class="reading-area">
+                <div id="textContent" class="text-content"></div>
+                
+                <div id="comprehensionSection" class="comprehension-section hidden">
+                    <div class="section-header">
+                        <h2>🤔 Verifica tu comprensión</h2>
+                        <p class="instructions">
+                            Responde con <strong>tus propias palabras</strong>. No hay respuestas únicas correctas, 
+                            ¡lo importante es tu interpretación y razonamiento!
+                        </p>
+                    </div>
+                    
+                    <div id="questionsContainer"></div>
+                    
+                    <button class="submit-btn" onclick="checkUnderstanding()">
+                        ✅ Revisar mis respuestas
+                    </button>
+                    
+                    <div id="feedbackArea" class="feedback-area hidden"></div>
+                </div>
+
+                <button id="finishReadingBtn" class="finish-btn" onclick="finishReading()">
+                    🎯 He terminado de leer y comprender
+                </button>
+            </article>
+        </main>
+    </div>
+
+    <script>
+        const readingDB = {
+            'a1-1': {
+                title: 'My Morning Routine',
+                text: `Every morning, I wake up at 7 o'clock. First, I wash my face and brush my teeth. Then, I eat breakfast with my family. We usually have bread, eggs, and orange juice. After breakfast, I put on my school uniform and pack my backpack. I leave home at 8:15 and walk to school with my sister. School starts at 8:30. In the morning, we have four classes: math, science, English, and history. At 12:30, we have lunch in the cafeteria. I always sit with my friends. In the afternoon, we have art and music. School finishes at 3:00. When I get home, I do my homework first. Then, I play video games for one hour. At 7:00, we have dinner together. Before bed, I read a book for 20 minutes. I usually go to sleep at 9:30. This is my typical day!`,
+                difficultWords: {
+                    'brush': 'cepillar',
+                    'uniform': 'uniforme',
+                    'backpack': 'mochila',
+                    'cafeteria': 'cafetería',
+                    'typical': 'típico'
+                },
+                keyPhrases: ['wake up at 7', 'eat breakfast with my family', 'put on my school uniform', 'School starts at 8:30', 'do my homework first', 'read a book for 20 minutes'],
+                questions: [
+                    {
+                        id: 1,
+                        text: '¿Qué crees que es lo más importante en la rutina de esta persona? ¿Por qué lo piensas?',
+                        type: 'open',
+                        guidance: 'Piensa en qué actividad no puede faltar en su día y por qué la menciona con detalle.'
+                    },
+                    {
+                        id: 2,
+                        text: 'La persona dice "This is my typical day". ¿Qué te dice esto sobre su vida? ¿Es siempre exactamente igual o puede variar?',
+                        type: 'open',
+                        guidance: 'La palabra "typical" es clave. ¿Significa que todos los días son idénticos o que hay un patrón general?'
+                    },
+                    {
+                        id: 3,
+                        text: '¿Por qué crees que la persona menciona específicamente que lee antes de dormir? ¿Qué nos dice esto sobre sus prioridades?',
+                        type: 'open',
+                        guidance: 'Observa el orden de las actividades. ¿Qué importancia tiene esta última actividad antes de dormir?'
+                    }
+                ],
+                hints: [
+                    '🔍 Observa qué actividades repite todos los días y cuáles son con otras personas.',
+                    '🔍 El texto usa "usually" y "typical". ¿Qué diferencia hay entre "siempre" y "usualmente"?',
+                    '🔍 Presta atención al orden cronológico: ¿qué pasa antes de la escuela, durante, y después?'
+                ]
+            },
+            'a1-2': {
+                title: 'At the Coffee Shop',
+                text: `Every Saturday, I go to my favorite coffee shop. It is called "The Morning Sun". The shop is small but very cozy. There are five tables and a big window. I always sit near the window because I like to watch people walk by. The waiter, Tom, knows my name. He always smiles and says, "Good morning! The usual?" I always order the same thing: a cappuccino and a chocolate muffin. The cappuccino is hot and creamy. The muffin is soft and sweet. Sometimes, I bring my laptop and do my homework. Other times, I read a book or listen to music. My friend Maria sometimes meets me there. We talk about our week and laugh a lot. The coffee shop is my favorite place because it feels like a second home. I feel happy and relaxed there.`,
+                difficultWords: {
+                    'cozy': 'acogedor',
+                    'waiter': 'mesero/camarero',
+                    'cappuccino': 'capuchino',
+                    'creamy': 'cremoso',
+                    'relaxed': 'relajado'
+                },
+                keyPhrases: ['my favorite coffee shop', 'sit near the window', 'The usual', 'feels like a second home', 'happy and relaxed'],
+                questions: [
+                    {
+                        id: 1,
+                        text: '¿Por qué crees que el autor llama a la cafetería "un segundo hogar"? ¿Qué necesita una persona para sentirse así en un lugar?',
+                        type: 'open',
+                        guidance: 'Piensa en qué hace que un lugar sea especial. ¿Es solo la comida o hay algo más?'
+                    },
+                    {
+                        id: 2,
+                        text: 'El mesero le pregunta "The usual?". ¿Qué nos dice esto sobre la relación entre el autor y Tom?',
+                        type: 'open',
+                        guidance: '¿Qué significa cuando alguien conoce tu orden habitual? ¿Es una relación de confianza?'
+                    },
+                    {
+                        id: 3,
+                        text: 'El autor dice que a veces hace tareas, a veces lee, y a veces habla con Maria. ¿Qué nos dice esto sobre cómo usa el lugar?',
+                        type: 'open',
+                        guidance: '¿Es solo para comer o tiene diferentes propósitos? ¿Qué tipo de lugar permite eso?'
+                    }
+                ],
+                hints: [
+                    '🔍 Presta atención a las emociones: "happy", "relaxed", "cozy". ¿Qué crea estas sensaciones?',
+                    '🔍 El autor menciona "watch people walk by". ¿Por qué le gusta esto? ¿Qué tipo de persona disfruta observar?',
+                    '🔍 Compara "The Morning Sun" con otros lugares. ¿Qué lo hace diferente de una cafetería normal?'
+                ]
+            },
+            'a2-1': {
+                title: 'A Trip to the Mountains',
+                text: `Last summer, my family and I decided to go camping in the mountains. We planned the trip for two weeks because we wanted everything to be perfect. On Friday morning, we packed our car with tents, sleeping bags, and lots of food. My dad drove for three hours while my mom showed us photos of the place on her phone. When we arrived, the view was amazing! Tall green trees everywhere, and a clear blue lake near our camping spot. We set up the tent together - it was more difficult than it looked in the video! In the evening, we made a campfire and cooked hot dogs. My sister told scary stories, but I wasn't afraid because the stars were so beautiful. The next day, we hiked up the mountain. It was tiring, but when we reached the top, we could see the entire valley. I felt proud and happy. We stayed for three days, and I took many photos. On the last night, it rained a little, but we stayed dry inside the tent. I will never forget this trip because it was my first time camping, and I learned that nature is more beautiful than any video game.`,
+                difficultWords: {
+                    'camping': 'acampar',
+                    'sleeping bags': 'sacos de dormir',
+                    'set up': 'montar/armar',
+                    'hiked': 'caminar/senderismo',
+                    'valley': 'valle',
+                    'entire': 'entero/completo'
+                },
+                keyPhrases: ['planned the trip for two weeks', 'the view was amazing', 'more difficult than it looked', 'I felt proud and happy', 'nature is more beautiful than any video game', 'never forget this trip'],
+                questions: [
+                    {
+                        id: 1,
+                        text: 'El autor dice que planeó el viaje por dos semanas. ¿Qué nos dice esto sobre su personalidad o forma de ser?',
+                        type: 'open',
+                        guidance: '¿Por qué alguien planearía tanto tiempo? ¿Qué importancia le da a la preparación?'
+                    },
+                    {
+                        id: 2,
+                        text: 'La tienda fue "more difficult than it looked in the video". ¿Qué lección aprendió el autor aquí sobre las expectativas vs. la realidad?',
+                        type: 'open',
+                        guidance: 'Piensa en la diferencia entre ver algo y hacerlo. ¿Es lo mismo ver que experimentar?'
+                    },
+                    {
+                        id: 3,
+                        text: '¿Por qué crees que el autor compara la naturaleza con los videojuegos al final? ¿Qué cambió en su perspectiva?',
+                        type: 'open',
+                        guidance: '¿Qué estaba haciendo el autor antes del viaje? ¿Qué descubrió que lo sorprendió?'
+                    },
+                    {
+                        id: 4,
+                        text: 'El viaje tuvo un momento difícil (la lluvia). ¿Cómo reaccionó el autor? ¿Qué nos dice esto sobre su actitud?',
+                        type: 'open',
+                        guidance: 'Busca cómo describe la lluvia. ¿Es negativo o positivo el recuerdo final?'
+                    }
+                ],
+                hints: [
+                    '🔍 El autor usa comparaciones. Busca "more difficult than" y "more beautiful than". ¿Qué está comparando y por qué?',
+                    '🔍 Presta atención a los sentimientos: "proud", "happy", "never forget". ¿Qué desencadena estos sentimientos?',
+                    '🔍 El texto contrasta preparación vs. realidad, y tecnología vs. naturaleza. ¿Cuál es el mensaje final?'
+                ]
+            },
+            'b1-1': {
+                title: 'The Importance of Sleep',
+                text: `In today's busy world, many people forget the importance of a good night's sleep. We live in a society that values productivity and constant activity. However, scientific studies show that sleep is not a luxury - it is a necessity for our physical and mental health. When we sleep, our brain processes information from the day. It organizes memories and removes toxins. Without enough sleep, our concentration decreases significantly. We make more mistakes, and our creativity suffers. Adults need between seven and nine hours of sleep per night, but teenagers require even more. Unfortunately, many students stay up late studying or using their phones. They believe that sacrificing sleep will help them achieve more. In reality, the opposite happens. A tired brain cannot learn effectively. To improve sleep quality, experts recommend several habits. First, establish a regular schedule. Go to bed and wake up at the same time every day, even on weekends. Second, avoid screens for at least one hour before bedtime. The blue light from phones and computers tricks our brain into thinking it is still daytime. Third, create a comfortable environment. Keep your bedroom cool, dark, and quiet. Finally, avoid caffeine in the afternoon and evening. Many people do not realize that coffee consumed at 4 PM can still affect sleep at 11 PM. Good sleep habits are an investment in your health and success. When you sleep well, you think better, feel better, and perform better in everything you do.`,
+                difficultWords: {
+                    'productivity': 'productividad',
+                    'toxins': 'toxinas',
+                    'concentration': 'concentración',
+                    'significantly': 'significantemente',
+                    'sacrificing': 'sacrificar',
+                    'establish': 'establecer',
+                    'tricks': 'engañar',
+                    'caffeine': 'cafeína',
+                    'investment': 'inversión'
+                },
+                keyPhrases: ['sleep is not a luxury', 'processes information from the day', 'sacrificing sleep will help them achieve more', 'the opposite happens', 'an investment in your health and success'],
+                questions: [
+                    {
+                        id: 1,
+                        text: 'El texto dice que vivimos en una sociedad que valora la productividad. ¿Cómo crees que esta presión social afecta nuestro sueño? ¿Es consciente o inconsciente?',
+                        type: 'open',
+                        guidance: 'Piensa en las expectativas sociales. ¿Sentimos presión por estar siempre ocupados?'
+                    },
+                    {
+                        id: 2,
+                        text: 'El autor compara el sueño con una inversión. ¿Por qué crees que usa esta metáfora económica? ¿Qué implica?',
+                        type: 'open',
+                        guidance: 'Una inversión requiere algo ahora para obtener beneficios después. ¿Cómo funciona esto con el sueño?'
+                    },
+                    {
+                        id: 3,
+                        text: 'Muchos estudiantes sacrifican sueño por estudiar más. Según el texto, ¿por qué es esto contraproducente? ¿Qué paradoja presenta?',
+                        type: 'open',
+                        guidance: 'Busca la frase "the opposite happens". ¿Qué esperan lograr y qué realmente obtienen?'
+                    },
+                    {
+                        id: 4,
+                        text: 'El texto menciona que la luz azul "engaña" al cerebro. ¿Qué nos dice esto sobre la relación entre tecnología y biología?',
+                        type: 'open',
+                        guidance: 'Nuestro cuerpo tiene mecanismos naturales. ¿Cómo la tecnología moderna los interrumpe?'
+                    }
+                ],
+                hints: [
+                    '🔍 El texto contrasta percepción social vs. realidad científica. ¿Qué dice la sociedad y qué dicen los estudios?',
+                    '🔍 Busca las palabras "however" y "in reality". ¿Qué contradicciones presenta el autor?',
+                    '🔍 El texto tiene una estructura: problema → consecuencias → soluciones. ¿Puedes identificar cada parte?'
+                ]
+            }
+        };
+
+        let currentReading = null;
+        let hintIndex = 0;
+        let highlightMode = false;
+        let helpClicks = 0;
+
+        function init() {
+            const readingId = localStorage.getItem('currentReading');
+            currentReading = readingDB[readingId];
+            
+            if (!currentReading) {
+                alert('Lectura no encontrada');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            document.getElementById('readingTitle').textContent = currentReading.title;
+            renderText();
+            updateStats();
+        }
+
+        function renderText() {
+            let text = currentReading.text;
+            
+            Object.keys(currentReading.difficultWords).forEach(word => {
+                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                text = text.replace(regex, `<span class="difficult-word" data-word="${word}" onclick="showWordHelp('${word}')">${word}</span>`);
+            });
+
+            document.getElementById('textContent').innerHTML = `<p>${text}</p>`;
+        }
+
+        function showWordHelp(word) {
+            helpClicks++;
+            updateStats();
+            const translation = currentReading.difficultWords[word];
+            const existing = document.querySelector('.word-popup');
+            if (existing) existing.remove();
+
+            const popup = document.createElement('div');
+            popup.className = 'word-popup';
+            popup.innerHTML = `
+                <strong>${word}</strong><br>
+                <span class="translation">${translation}</span><br>
+                <small>💡 Tip: Intenta adivinar el significado por el contexto antes de ver la traducción</small>
+            `;
+            
+            const wordElement = document.querySelector(`[data-word="${word}"]`);
+            wordElement.appendChild(popup);
+
+            setTimeout(() => popup.remove(), 4000);
+        }
+
+        function toggleHighlight() {
+            highlightMode = !highlightMode;
+            const btn = document.getElementById('highlightBtn');
+            const textElement = document.getElementById('textContent');
+            
+            if (highlightMode) {
+                btn.classList.add('active');
+                let text = currentReading.text;
+                currentReading.keyPhrases.forEach(phrase => {
+                    const escapedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedPhrase, 'gi');
+                    text = text.replace(regex, `<mark class="key-phrase">${phrase}</mark>`);
+                });
+                textElement.innerHTML = `<p>${text}</p>`;
+                // Re-aplicar palabras difíciles
+                Object.keys(currentReading.difficultWords).forEach(word => {
+                    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                    textElement.innerHTML = textElement.innerHTML.replace(regex, `<span class="difficult-word" data-word="${word}" onclick="showWordHelp('${word}')">${word}</span>`);
+                });
+            } else {
+                btn.classList.remove('active');
+                renderText();
+            }
+        }
+
+        function showVocabulary() {
+            helpClicks++;
+            updateStats();
+            const vocab = Object.entries(currentReading.difficultWords)
+                .map(([word, trans]) => `• ${word} = ${trans}`)
+                .join('\n');
+            alert('📚 Vocabulario útil:\n\n' + vocab + '\n\n💡 Intenta primero adivinar por contexto, luego verifica.');
+        }
+
+        function toggleTranslation() {
+            const words = document.querySelectorAll('.difficult-word');
+            words.forEach(word => {
+                word.classList.toggle('show-translation');
+            });
+        }
+
+        function showHint() {
+            helpClicks++;
+            updateStats();
+            const hints = currentReading.hints;
+            if (hintIndex < hints.length) {
+                document.getElementById('hintBox').textContent = hints[hintIndex];
+                document.getElementById('hintBox').classList.remove('hidden');
+                hintIndex++;
+            } else {
+                document.getElementById('hintBox').textContent = '💡 ¡Has visto todas las pistas! Ahora intenta responder con tus propias palabras. Recuerda: no hay una sola respuesta correcta.';
+                document.getElementById('hintBox').classList.remove('hidden');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('clicksHelp').textContent = helpClicks;
+            if (currentReading) {
+                document.getElementById('wordsRead').textContent = currentReading.text.split(' ').length;
+            }
+        }
+
+        function finishReading() {
+            document.getElementById('comprehensionSection').classList.remove('hidden');
+            document.getElementById('finishReadingBtn').classList.add('hidden');
+            
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            currentReading.questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question-box';
+                div.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <p class="question-text">${q.text}</p>
+                    </div>
+                    <textarea 
+                        id="answer-${q.id}" 
+                        class="answer-input" 
+                        placeholder="Escribe tu respuesta aquí con tus propias palabras. No hay respuestas únicas correctas..."
+                        rows="5"
+                    ></textarea>
+                    <button class="guidance-btn" onclick="showGuidance(${q.id})">
+                        💡 ¿Necesitas una orientación para pensar?
+                    </button>
+                    <div id="guidance-${q.id}" class="guidance-text hidden"></div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showGuidance(questionId) {
+            helpClicks++;
+            updateStats();
+            const question = currentReading.questions.find(q => q.id === questionId);
+            const guidanceElement = document.getElementById(`guidance-${questionId}`);
+            guidanceElement.innerHTML = `<strong>💡 Orientación:</strong> ${question.guidance}`;
+            guidanceElement.classList.remove('hidden');
+        }
+
+        function checkUnderstanding() {
+            const answers = currentReading.questions.map(q => {
+                const answer = document.getElementById(`answer-${q.id}`).value.trim();
+                return { question: q.text, answer: answer, id: q.id };
+            });
+
+            const emptyAnswers = answers.filter(a => a.answer.length < 15);
+            if (emptyAnswers.length > 0) {
+                alert('Por favor, responde todas las preguntas con al menos 2-3 oraciones. ¡Tu opinión y razonamiento son importantes!');
+                return;
+            }
+
+            const feedbackArea = document.getElementById('feedbackArea');
+            let feedbackHTML = `
+                <div class="feedback-header">
+                    <h3>🌟 ¡Excelente trabajo de reflexión!</h3>
+                    <p>Recuerda: en comprensión lectora no hay respuestas "correctas" únicas. 
+                    Lo valioso es que hayas <strong>pensado</strong> y <strong>interpretado</strong> el texto.</p>
+                </div>
+            `;
+            
+            feedbackHTML += '<div class="feedback-details">';
+            answers.forEach((a, index) => {
+                const length = a.answer.length;
+                let encouragement = '';
+                let icon = '';
+                if (length < 80) {
+                    encouragement = 'Buen inicio. Intenta expandir tu respuesta la próxima vez. ¿Puedes dar un ejemplo específico del texto?';
+                    icon = '🌱';
+                } else if (length < 150) {
+                    encouragement = '¡Buena reflexión! Demuestras que leíste con atención. ¿Notaste algún detalle adicional que puedas mencionar?';
+                    icon = '🌿';
+                } else {
+                    encouragement = '¡Análisis muy completo! Demuestras excelente comprensión y pensamiento crítico. ¡Sigue así!';
+                    icon = '🌳';
+                }
+                
+                feedbackHTML += `
+                    <div class="feedback-item">
+                        <div class="feedback-item-header">
+                            <span class="feedback-icon">${icon}</span>
+                            <span class="feedback-level">Pregunta ${index + 1}</span>
+                        </div>
+                        <p class="feedback-length">Tu respuesta tiene <strong>${length}</strong> caracteres.</p>
+                        <p class="encouragement">${encouragement}</p>
+                    </div>
+                `;
+            });
+            feedbackHTML += '</div>';
+
+            feedbackHTML += `
+                <div class="next-steps">
+                    <h4>🚀 ¿Qué hacer ahora para consolidar tu aprendizaje?</h4>
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <span class="step-icon">🔄</span>
+                            <p><strong>Relee</strong> el texto y busca detalles que no notaste antes</p>
+                        </div>
+                        <div class="step-card">
+                            <span class="step-icon">📝</span>
+                            <p><strong>Resume</strong> el texto en 3 oraciones con tus propias palabras</p>
+                        </div>
+                        <div class="step-card">
+                            <span class="step-icon">🗣️</span>
+                            <p><strong>Explica</strong> el texto a alguien más o graba un audio</p>
+                        </div>
+                        <div class="step-card">
+                            <span class="step-icon">🎯</span>
+                            <p><strong>Conecta</strong> el tema con tu propia vida o experiencia</p>
+                        </div>
+                    </div>
+                    <button class="new-reading-btn" onclick="window.location.href='dashboard.html'">
+                        📚 Elegir otra lectura
+                    </button>
+                </div>
+            `;
+
+            feedbackArea.innerHTML = feedbackHTML;
+            feedbackArea.classList.remove('hidden');
+            feedbackArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        init();
+    </script>
+</body>
+</html>

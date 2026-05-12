@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecturas - ReadWise</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+</head>
+<body>
+    <div class="container">
+        <header class="dash-header">
+            <div class="nav">
+                <a href="index.html" class="back-btn">← Cambiar nivel</a>
+                <div class="logo-small">
+                    <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="Logo" class="logo-img-small">
+                    <span class="current-level" id="currentLevel"></span>
+                </div>
+            </div>
+            <h1>📖 Elige una lectura</h1>
+            <p class="subtitle">Selecciona un texto y comienza tu aprendizaje interactivo</p>
+        </header>
+
+        <main id="readingList" class="reading-grid">
+            <!-- Se llena con JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        const readings = {
+            'A1': [
+                {
+                    id: 'a1-1',
+                    title: 'My Morning Routine',
+                    description: 'Una descripción simple de rutinas diarias con vocabulario básico',
+                    words: 120,
+                    time: '5 min',
+                    tags: ['Rutinas', 'Presente simple', 'Familia']
+                },
+                {
+                    id: 'a1-2',
+                    title: 'At the Coffee Shop',
+                    description: 'Pedir comida y bebidas en un café, diálogos cotidianos',
+                    words: 150,
+                    time: '6 min',
+                    tags: ['Comida', 'Diálogos', 'Servicios']
+                },
+                {
+                    id: 'a1-3',
+                    title: 'My Favorite Animal',
+                    description: 'Describir animales con adjetivos simples',
+                    words: 100,
+                    time: '4 min',
+                    tags: ['Animales', 'Descripción', 'Adjetivos']
+                }
+            ],
+            'A2': [
+                {
+                    id: 'a2-1',
+                    title: 'A Trip to the Mountains',
+                    description: 'Experiencias de viaje, descripciones de lugares y emociones',
+                    words: 200,
+                    time: '8 min',
+                    tags: ['Viajes', 'Pasado simple', 'Naturaleza']
+                },
+                {
+                    id: 'a2-2',
+                    title: 'My Best Friend',
+                    description: 'Describir personas, relaciones y actividades juntos',
+                    words: 180,
+                    time: '7 min',
+                    tags: ['Descripciones', 'Adjetivos', 'Amistad']
+                },
+                {
+                    id: 'a2-3',
+                    title: 'A Day at the Beach',
+                    description: 'Actividades de verano, clima y sensaciones',
+                    words: 190,
+                    time: '7 min',
+                    tags: ['Verano', 'Actividades', 'Sentidos']
+                }
+            ],
+            'B1': [
+                {
+                    id: 'b1-1',
+                    title: 'The Importance of Sleep',
+                    description: 'Artículo sobre hábitos saludables y consejos prácticos',
+                    words: 350,
+                    time: '12 min',
+                    tags: ['Salud', 'Conectores', 'Consejos']
+                },
+                {
+                    id: 'b1-2',
+                    title: 'Working from Home',
+                    description: 'Opiniones sobre trabajo remoto, ventajas y desventajas',
+                    words: 400,
+                    time: '14 min',
+                    tags: ['Trabajo', 'Opinión', 'Comparación']
+                },
+                {
+                    id: 'b1-3',
+                    title: 'Learning a New Language',
+                    description: 'Estrategias y experiencias personales en el aprendizaje',
+                    words: 380,
+                    time: '13 min',
+                    tags: ['Idiomas', 'Consejos', 'Experiencia']
+                }
+            ],
+            'B2': [
+                {
+                    id: 'b2-1',
+                    title: 'The Future of Education',
+                    description: 'Análisis de tendencias educativas y tecnología en el aula',
+                    words: 600,
+                    time: '20 min',
+                    tags: ['Educación', 'Tecnología', 'Futuro']
+                },
+                {
+                    id: 'b2-2',
+                    title: 'Climate Change: A Personal View',
+                    description: 'Ensayo argumentativo sobre responsabilidad individual',
+                    words: 550,
+                    time: '18 min',
+                    tags: ['Medio ambiente', 'Persuasión', 'Opinión']
+                },
+                {
+                    id: 'b2-3',
+                    title: 'The Art of Failure',
+                    description: 'Reflexión sobre el fracaso como parte del éxito',
+                    words: 580,
+                    time: '19 min',
+                    tags: ['Éxito', 'Reflexión', 'Motivación']
+                }
+            ]
+        };
+
+        const level = localStorage.getItem('userLevel') || 'A1';
+        document.getElementById('currentLevel').textContent = `Nivel: ${level}`;
+
+        const list = document.getElementById('readingList');
+        readings[level].forEach(reading => {
+            const card = document.createElement('div');
+            card.className = 'reading-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3>${reading.title}</h3>
+                    <span class="word-count">📝 ${reading.words} palabras · ⏱️ ${reading.time}</span>
+                </div>
+                <p class="card-description">${reading.description}</p>
+                <div class="tags">
+                    ${reading.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <button class="start-btn" onclick="startReading('${reading.id}')">
+                    📖 Comenzar lectura
+                </button>
+            `;
+            list.appendChild(card);
+        });
+
+        function startReading(id) {
+            localStorage.setItem('currentReading', id);
+            window.location.href = 'reader.html';
+        }
+    </script>
+</body>
+</html>
