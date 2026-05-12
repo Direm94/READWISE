@@ -3,114 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reading - ReadWise</title>
+    <title>Desafío — ReadWise Quest</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="reader-header">
-            <div class="top-bar">
-                <a href="dashboard.html" class="back-btn">← Back to Readings</a>
-                <div class="user-info">
-                    <span id="userGreeting"></span>
-                    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-                </div>
+    <div class="particles" id="particles"></div>
+    <div class="confetti-container" id="confetti"></div>
+    
+    <nav class="top-nav glass">
+        <div class="nav-brand">
+            <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" class="nav-logo">
+            <span>ReadWise Quest</span>
+        </div>
+        <div class="nav-user">
+            <div class="timer" id="readingTimer">⏱️ 00:00</div>
+            <div class="xp-bar-mini">
+                <div class="xp-fill" id="xpFill"></div>
+                <span id="xpText">0 XP</span>
             </div>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress" id="progressBar"></div>
-                </div>
-                <span class="progress-text">Reading Progress</span>
-            </div>
-            <h1 id="readingTitle"></h1>
-        </header>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <button class="icon-btn" onclick="window.location.href='dashboard.html'" title="Volver">←</button>
+        </div>
+    </nav>
 
-        <main class="reader-layout">
-            <aside class="tools-panel">
+    <div class="container reader-container">
+        <!-- Barra de progreso de lectura -->
+        <div class="reading-progress-bar">
+            <div class="reading-progress-fill" id="readingProgress"></div>
+        </div>
+
+        <div class="reader-layout">
+            <aside class="tools-panel glass">
+                <div class="player-mini">
+                    <div class="mini-avatar" id="miniAvatar">🦁</div>
+                    <div class="mini-info">
+                        <span id="miniName">Jugador</span>
+                        <span class="mini-level">Lvl <span id="miniLevel">1</span></span>
+                    </div>
+                </div>
+
                 <div class="tool-section">
-                    <h3>🎯 Tools</h3>
+                    <h3>🎯 Herramientas</h3>
                     <button class="tool-btn" onclick="toggleHighlight()" id="highlightBtn">
-                        ✨ Highlight Key Ideas
+                        <span class="tool-icon">✨</span>
+                        <span>Resaltar ideas clave</span>
                     </button>
                     <button class="tool-btn" onclick="showVocabulary()">
-                        📚 Useful Vocabulary
+                        <span class="tool-icon">📚</span>
+                        <span>Vocabulario</span>
                     </button>
                     <button class="tool-btn" onclick="toggleTranslation()">
-                        🌐 Show Translation (hard words)
+                        <span class="tool-icon">🌐</span>
+                        <span>Traducción</span>
                     </button>
                     <button class="tool-btn" onclick="speakText()">
-                        🔊 Listen to Text
+                        <span class="tool-icon">🔊</span>
+                        <span>Escuchar texto</span>
                     </button>
-                </div>
+                </button>
                 
                 <div class="tool-section">
-                    <h3>💡 Help</h3>
+                    <h3>💡 Ayudas</h3>
                     <button class="tool-btn hint-btn" onclick="showHint()">
-                        🤔 Give me a hint
+                        <span class="tool-icon">🤔</span>
+                        <span>Pista (<span id="hintsLeft">3</span>)</span>
                     </button>
                     <div id="hintBox" class="hint-box hidden"></div>
                 </div>
 
                 <div class="tool-section">
-                    <h3>📝 My Progress</h3>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span class="stat-number" id="wordsRead">0</span>
-                            <span class="stat-label">words</span>
+                    <h3>📊 Sesión</h3>
+                    <div class="session-stats">
+                        <div class="s-stat">
+                            <span class="s-stat-num" id="wordsCount">0</span>
+                            <span class="s-stat-label">palabras</span>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number" id="clicksHelp">0</span>
-                            <span class="stat-label">helps used</span>
+                        <div class="s-stat">
+                            <span class="s-stat-num" id="helpsCount">0</span>
+                            <span class="s-stat-label">ayudas</span>
                         </div>
                     </div>
                 </div>
             </aside>
 
-            <article class="reading-area">
+            <article class="reading-area glass">
+                <div class="reading-header">
+                    <h1 id="readingTitle"></h1>
+                    <div class="reading-badges">
+                        <span class="r-badge" id="diffBadge">⭐</span>
+                        <span class="r-badge" id="xpBadge">+50 XP</span>
+                    </div>
+                </div>
+
                 <div id="textContent" class="text-content"></div>
                 
+                <div class="scroll-indicator" id="scrollIndicator">
+                    <span>👇 Sigue leyendo...</span>
+                </div>
+
                 <div id="comprehensionSection" class="comprehension-section hidden">
-                    <div class="section-header">
-                        <h2>🤔 Check Your Understanding</h2>
-                        <p class="instructions">
-                            Answer in <strong>your own words</strong>. There are no single "correct" answers — 
-                            what matters is your <strong>thinking</strong> and <strong>interpretation</strong>!
+                    <div class="comprehension-header">
+                        <h2>🎯 ¡Momento de demostrar tu comprensión!</h2>
+                        <p class="comprehension-subtitle">
+                            Responde en <strong>tus propias palabras</strong>. No hay respuestas únicas correctas.
                         </p>
                     </div>
                     
                     <div id="questionsContainer"></div>
                     
                     <button class="submit-btn" onclick="checkUnderstanding()">
-                        ✅ Check My Answers
+                        <span>✨ Enviar respuestas</span>
+                        <span class="btn-glow"></span>
                     </button>
                     
                     <div id="feedbackArea" class="feedback-area hidden"></div>
                 </div>
 
                 <button id="finishReadingBtn" class="finish-btn" onclick="finishReading()">
-                    🎯 I have finished reading and understanding
+                    <span>🎯 He terminado de leer</span>
+                    <span class="btn-particles"></span>
                 </button>
             </article>
-        </main>
+        </div>
+    </div>
+
+    <!-- Modal de celebración -->
+    <div class="celebration-modal hidden" id="celebrationModal">
+        <div class="celebration-content">
+            <div class="celebration-emoji">🎉</div>
+            <h2>¡Desafío completado!</h2>
+            <div class="xp-earned">
+                <span class="xp-big" id="xpEarned">+50</span>
+                <span>XP ganados</span>
+            </div>
+            <div class="celebration-stats" id="celebrationStats"></div>
+            <button class="celebration-btn" onclick="closeCelebration()">
+                Continuar mi aventura →
+            </button>
+        </div>
     </div>
 
     <script>
-        // Check user
-        const userName = localStorage.getItem('readwiseUser');
-        if (!userName) window.location.href = 'index.html';
-        else document.getElementById('userGreeting').textContent = `👋 ${userName}`;
-
-        // Theme
-        const currentTheme = localStorage.getItem('readwiseTheme') || 'light';
-        document.body.setAttribute('data-theme', currentTheme);
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', next);
-            localStorage.setItem('readwiseTheme', next);
-        }
-
+        // ========== DATOS ==========
         const readingDB = {
             'a1-1': {
                 title: 'My Morning Routine',
@@ -128,7 +164,6 @@
                         id: 1,
                         text: 'What do you think is the most important part of this person\'s routine? Why do you think so?',
                         textES: '¿Qué crees que es la parte más importante de la rutina de esta persona? ¿Por qué lo piensas?',
-                        type: 'open',
                         guidance: 'Think about which activity they never skip and why they describe it in detail.',
                         guidanceES: 'Piensa en qué actividad nunca omiten y por qué la describen con detalle.',
                         vocabHelp: {
@@ -141,7 +176,6 @@
                         id: 2,
                         text: 'The person says "This is my typical day". What does this tell you about their life? Is it always exactly the same or can it change?',
                         textES: 'La persona dice "This is my typical day". ¿Qué te dice esto sobre su vida? ¿Es siempre exactamente igual o puede cambiar?',
-                        type: 'open',
                         guidance: 'The word "typical" is key. Does it mean every day is identical or that there is a general pattern?',
                         guidanceES: 'La palabra "typical" es clave. ¿Significa que todos los días son idénticos o que hay un patrón general?',
                         vocabHelp: {
@@ -154,7 +188,6 @@
                         id: 3,
                         text: 'Why do you think the person specifically mentions reading before bed? What does this tell us about their priorities?',
                         textES: '¿Por qué crees que la persona menciona específicamente que lee antes de dormir? ¿Qué nos dice esto sobre sus prioridades?',
-                        type: 'open',
                         guidance: 'Look at the order of activities. What importance does this last activity before sleeping have?',
                         guidanceES: 'Observa el orden de las actividades. ¿Qué importancia tiene esta última actividad antes de dormir?',
                         vocabHelp: {
@@ -168,7 +201,9 @@
                     '🔍 Look at which activities they repeat every day and which ones are with other people.',
                     '🔍 The text uses "usually" and "typical". What is the difference between "always" and "usually"?',
                     '🔍 Pay attention to the chronological order: what happens before school, during school, and after school?'
-                ]
+                ],
+                xp: 50,
+                difficulty: '⭐'
             },
             'a1-2': {
                 title: 'At the Coffee Shop',
@@ -186,7 +221,6 @@
                         id: 1,
                         text: 'Why do you think the writer calls the coffee shop "a second home"? What does a person need to feel this way in a place?',
                         textES: '¿Por qué crees que el autor llama a la cafetería "un segundo hogar"? ¿Qué necesita una persona para sentirse así en un lugar?',
-                        type: 'open',
                         guidance: 'Think about what makes a place special. Is it just the food or is there something more?',
                         guidanceES: 'Piensa en qué hace que un lugar sea especial. ¿Es solo la comida o hay algo más?',
                         vocabHelp: {
@@ -199,7 +233,6 @@
                         id: 2,
                         text: 'The waiter asks "The usual?". What does this tell us about the relationship between the writer and Tom?',
                         textES: 'El mesero le pregunta "The usual?". ¿Qué nos dice esto sobre la relación entre el autor y Tom?',
-                        type: 'open',
                         guidance: 'What does it mean when someone knows your usual order? Is it a relationship of trust?',
                         guidanceES: '¿Qué significa cuando alguien conoce tu orden habitual? ¿Es una relación de confianza?',
                         vocabHelp: {
@@ -212,7 +245,6 @@
                         id: 3,
                         text: 'The writer says they sometimes do homework, sometimes read, and sometimes talk with Maria. What does this tell us about how they use the place?',
                         textES: 'El autor dice que a veces hace tareas, a veces lee, y a veces habla con Maria. ¿Qué nos dice esto sobre cómo usa el lugar?',
-                        type: 'open',
                         guidance: 'Is it just for eating or does it have different purposes? What kind of place allows that?',
                         guidanceES: '¿Es solo para comer o tiene diferentes propósitos? ¿Qué tipo de lugar permite eso?',
                         vocabHelp: {
@@ -226,7 +258,9 @@
                     '🔍 Pay attention to emotions: "happy", "relaxed", "cozy". What creates these feelings?',
                     '🔍 The writer mentions "watch people walk by". Why do they like this? What kind of person enjoys observing?',
                     '🔍 Compare "The Morning Sun" with other places. What makes it different from a normal coffee shop?'
-                ]
+                ],
+                xp: 50,
+                difficulty: '⭐'
             },
             'a2-1': {
                 title: 'A Trip to the Mountains',
@@ -245,7 +279,6 @@
                         id: 1,
                         text: 'The writer says they planned the trip for two weeks. What does this tell us about their personality or way of being?',
                         textES: 'El autor dice que planeó el viaje por dos semanas. ¿Qué nos dice esto sobre su personalidad o forma de ser?',
-                        type: 'open',
                         guidance: 'Why would someone plan for so long? What importance do they give to preparation?',
                         guidanceES: '¿Por qué alguien planearía tanto tiempo? ¿Qué importancia le da a la preparación?',
                         vocabHelp: {
@@ -258,7 +291,6 @@
                         id: 2,
                         text: 'The tent was "more difficult than it looked in the video". What lesson did the writer learn here about expectations vs. reality?',
                         textES: 'La tienda fue "more difficult than it looked in the video". ¿Qué lección aprendió el autor aquí sobre expectativas vs. realidad?',
-                        type: 'open',
                         guidance: 'Think about the difference between watching something and doing it. Is watching the same as experiencing?',
                         guidanceES: 'Piensa en la diferencia entre ver algo y hacerlo. ¿Es lo mismo ver que experimentar?',
                         vocabHelp: {
@@ -271,7 +303,6 @@
                         id: 3,
                         text: 'Why do you think the writer compares nature with video games at the end? What changed in their perspective?',
                         textES: '¿Por qué crees que el autor compara la naturaleza con los videojuegos al final? ¿Qué cambió en su perspectiva?',
-                        type: 'open',
                         guidance: 'What was the writer doing before the trip? What did they discover that surprised them?',
                         guidanceES: '¿Qué estaba haciendo el autor antes del viaje? ¿Qué descubrió que lo sorprendió?',
                         vocabHelp: {
@@ -284,7 +315,6 @@
                         id: 4,
                         text: 'The trip had a difficult moment (the rain). How did the writer react? What does this tell us about their attitude?',
                         textES: 'El viaje tuvo un momento difícil (la lluvia). ¿Cómo reaccionó el autor? ¿Qué nos dice esto sobre su actitud?',
-                        type: 'open',
                         guidance: 'Look at how they describe the rain. Is the final memory negative or positive?',
                         guidanceES: 'Mira cómo describe la lluvia. ¿Es el recuerdo final negativo o positivo?',
                         vocabHelp: {
@@ -298,7 +328,9 @@
                     '🔍 The writer uses comparisons. Find "more difficult than" and "more beautiful than". What are they comparing and why?',
                     '🔍 Pay attention to feelings: "proud", "happy", "never forget". What triggers these feelings?',
                     '🔍 The text contrasts preparation vs. reality, and technology vs. nature. What is the final message?'
-                ]
+                ],
+                xp: 75,
+                difficulty: '⭐⭐'
             },
             'b1-1': {
                 title: 'The Importance of Sleep',
@@ -320,7 +352,6 @@
                         id: 1,
                         text: 'The text says we live in a society that values productivity. How do you think this social pressure affects our sleep? Is it conscious or unconscious?',
                         textES: 'El texto dice que vivimos en una sociedad que valora la productividad. ¿Cómo crees que esta presión social afecta nuestro sueño? ¿Es consciente o inconsciente?',
-                        type: 'open',
                         guidance: 'Think about social expectations. Do we feel pressure to always be busy?',
                         guidanceES: 'Piensa en las expectativas sociales. ¿Sentimos presión por estar siempre ocupados?',
                         vocabHelp: {
@@ -334,7 +365,6 @@
                         id: 2,
                         text: 'The writer compares sleep with an investment. Why do you think they use this economic metaphor? What does it imply?',
                         textES: 'El autor compara el sueño con una inversión. ¿Por qué crees que usa esta metáfora económica? ¿Qué implica?',
-                        type: 'open',
                         guidance: 'An investment requires something now to get benefits later. How does this work with sleep?',
                         guidanceES: 'Una inversión requiere algo ahora para obtener beneficios después. ¿Cómo funciona esto con el sueño?',
                         vocabHelp: {
@@ -347,7 +377,6 @@
                         id: 3,
                         text: 'Many students sacrifice sleep to study more. According to the text, why is this counterproductive? What paradox does it present?',
                         textES: 'Muchos estudiantes sacrifican sueño por estudiar más. Según el texto, ¿por qué es esto contraproducente? ¿Qué paradoja presenta?',
-                        type: 'open',
                         guidance: 'Find the phrase "the opposite happens". What do they expect to achieve and what do they actually get?',
                         guidanceES: 'Busca la frase "the opposite happens". ¿Qué esperan lograr y qué realmente obtienen?',
                         vocabHelp: {
@@ -360,7 +389,6 @@
                         id: 4,
                         text: 'The text mentions that blue light "tricks" our brain. What does this tell us about the relationship between technology and biology?',
                         textES: 'El texto menciona que la luz azul "engaña" al cerebro. ¿Qué nos dice esto sobre la relación entre tecnología y biología?',
-                        type: 'open',
                         guidance: 'Our body has natural mechanisms. How does modern technology interrupt them?',
                         guidanceES: 'Nuestro cuerpo tiene mecanismos naturales. ¿Cómo la tecnología moderna los interrumpe?',
                         vocabHelp: {
@@ -375,28 +403,72 @@
                     '🔍 The text contrasts social perception vs. scientific reality. What does society say and what do studies say?',
                     '🔍 Look for the words "however" and "in reality". What contradictions does the writer present?',
                     '🔍 The text has a structure: problem → consequences → solutions. Can you identify each part?'
-                ]
+                ],
+                xp: 100,
+                difficulty: '⭐⭐⭐'
             }
         };
 
+        // ========== VARIABLES ==========
         let currentReading = null;
         let hintIndex = 0;
         let highlightMode = false;
         let helpClicks = 0;
+        let startTime = Date.now();
+        let timerInterval;
+        let userData = JSON.parse(localStorage.getItem('readwiseUser') || '{}');
 
+        // ========== INICIALIZACIÓN ==========
         function init() {
+            if (!userData.name) {
+                window.location.href = 'index.html';
+                return;
+            }
+
             const readingId = localStorage.getItem('currentReading');
             currentReading = readingDB[readingId];
             
             if (!currentReading) {
-                alert('Reading not found');
                 window.location.href = 'dashboard.html';
                 return;
             }
 
+            // UI
             document.getElementById('readingTitle').textContent = currentReading.title;
+            document.getElementById('diffBadge').textContent = currentReading.difficulty;
+            document.getElementById('xpBadge').textContent = `+${currentReading.xp} XP`;
+            document.getElementById('miniAvatar').textContent = userData.avatar || '🦁';
+            document.getElementById('miniName').textContent = userData.name;
+            document.getElementById('miniLevel').textContent = userData.level || 1;
+            
+            // XP bar
+            const xpForNext = (userData.level || 1) * 100;
+            const xpPercent = Math.min(((userData.xp || 0) % 100) / 100 * 100, 100);
+            document.getElementById('xpFill').style.width = xpPercent + '%';
+            document.getElementById('xpText').textContent = `${userData.xp || 0} XP`;
+
             renderText();
+            startTimer();
             updateStats();
+            
+            // Scroll indicator
+            window.addEventListener('scroll', () => {
+                const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+                document.getElementById('readingProgress').style.width = Math.min(scrollPercent, 100) + '%';
+                
+                if (scrollPercent > 80) {
+                    document.getElementById('scrollIndicator').classList.add('hidden');
+                }
+            });
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const secs = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('readingTimer').textContent = `⏱️ ${mins}:${secs}`;
+            }, 1000);
         }
 
         function renderText() {
@@ -408,12 +480,15 @@
             });
 
             document.getElementById('textContent').innerHTML = `<p>${text}</p>`;
+            document.getElementById('wordsCount').textContent = currentReading.text.split(' ').length;
         }
 
         function showWordHelp(word) {
             helpClicks++;
             updateStats();
             const translation = currentReading.difficultWords[word];
+            
+            // Remove existing popup
             const existing = document.querySelector('.word-popup');
             if (existing) existing.remove();
 
@@ -422,7 +497,7 @@
             popup.innerHTML = `
                 <strong>${word}</strong><br>
                 <span class="translation">${translation}</span><br>
-                <small>💡 Tip: Try to guess the meaning from context before checking</small>
+                <small>💡 Tip: Try to guess from context first!</small>
             `;
             
             const wordElement = document.querySelector(`[data-word="${word}"]`);
@@ -461,21 +536,21 @@
             const vocab = Object.entries(currentReading.difficultWords)
                 .map(([word, trans]) => `• ${word} = ${trans}`)
                 .join('\n');
-            alert('📚 Useful Vocabulary:\n\n' + vocab + '\n\n💡 Try to guess from context first, then check.');
+            alert('📚 Useful Vocabulary:\n\n' + vocab + '\n\n💡 Try to guess from context first!');
         }
 
         function toggleTranslation() {
             const words = document.querySelectorAll('.difficult-word');
-            words.forEach(word => {
-                word.classList.toggle('show-translation');
-            });
+            words.forEach(word => word.classList.toggle('show-translation'));
         }
 
         function speakText() {
             if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(currentReading.text);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.9;
+                utterance.rate = 0.85;
+                utterance.pitch = 1;
                 speechSynthesis.speak(utterance);
             } else {
                 alert('Sorry, your browser does not support text-to-speech.');
@@ -489,23 +564,24 @@
             if (hintIndex < hints.length) {
                 document.getElementById('hintBox').textContent = hints[hintIndex];
                 document.getElementById('hintBox').classList.remove('hidden');
+                document.getElementById('hintsLeft').textContent = Math.max(0, hints.length - hintIndex - 1);
                 hintIndex++;
             } else {
-                document.getElementById('hintBox').textContent = '💡 You have seen all hints! Now try to answer with your own words. Remember: there is no single correct answer.';
+                document.getElementById('hintBox').textContent = '💡 No more hints! Trust your reading skills.';
                 document.getElementById('hintBox').classList.remove('hidden');
+                document.getElementById('hintsLeft').textContent = '0';
             }
         }
 
         function updateStats() {
-            document.getElementById('clicksHelp').textContent = helpClicks;
-            if (currentReading) {
-                document.getElementById('wordsRead').textContent = currentReading.text.split(' ').length;
-            }
+            document.getElementById('helpsCount').textContent = helpClicks;
         }
 
         function finishReading() {
+            clearInterval(timerInterval);
             document.getElementById('comprehensionSection').classList.remove('hidden');
             document.getElementById('finishReadingBtn').classList.add('hidden');
+            document.getElementById('scrollIndicator').classList.add('hidden');
             
             const container = document.getElementById('questionsContainer');
             container.innerHTML = '';
@@ -513,14 +589,14 @@
             currentReading.questions.forEach((q, index) => {
                 const div = document.createElement('div');
                 div.className = 'question-box';
+                div.style.animationDelay = `${index * 0.1}s`;
                 
-                // Build vocab help HTML
                 let vocabHTML = '';
                 if (q.vocabHelp) {
                     vocabHTML = `
                         <div class="vocab-help">
                             <button class="vocab-toggle" onclick="toggleVocab(${q.id})">
-                                📖 Need help with question words?
+                                📖 Need help with words?
                             </button>
                             <div id="vocab-${q.id}" class="vocab-content hidden">
                                 ${Object.entries(q.vocabHelp).map(([word, meaning]) => 
@@ -543,11 +619,11 @@
                     <textarea 
                         id="answer-${q.id}" 
                         class="answer-input" 
-                        placeholder="Write your answer here in your own words. There are no unique correct answers..."
+                        placeholder="Write your answer here in your own words..."
                         rows="5"
                     ></textarea>
                     <button class="guidance-btn" onclick="showGuidance(${q.id})">
-                        💡 Need guidance to think?
+                        💡 Need guidance?
                     </button>
                     <div id="guidance-${q.id}" class="guidance-text hidden"></div>
                 `;
@@ -558,8 +634,7 @@
         }
 
         function toggleVocab(questionId) {
-            const vocabDiv = document.getElementById(`vocab-${questionId}`);
-            vocabDiv.classList.toggle('hidden');
+            document.getElementById(`vocab-${questionId}`).classList.toggle('hidden');
         }
 
         function showGuidance(questionId) {
@@ -582,88 +657,123 @@
 
             const emptyAnswers = answers.filter(a => a.answer.length < 15);
             if (emptyAnswers.length > 0) {
-                alert('Please answer all questions with at least 2-3 sentences. Your opinion and reasoning matter!');
+                shakeButton(document.querySelector('.submit-btn'));
+                alert('Please answer all questions with at least 2-3 sentences. Your thinking matters!');
                 return;
             }
 
-            // Save completion
-            const completed = JSON.parse(localStorage.getItem('readwiseCompleted') || '[]');
-            const readingId = localStorage.getItem('currentReading');
-            if (!completed.includes(readingId)) {
-                completed.push(readingId);
-                localStorage.setItem('readwiseCompleted', JSON.stringify(completed));
-            }
-            localStorage.setItem('readwiseHints', (parseInt(localStorage.getItem('readwiseHints') || 0) + helpClicks).toString());
+            // Calcular XP
+            const baseXP = currentReading.xp;
+            const hintPenalty = hintIndex * 5;
+            const timeBonus = Math.max(0, 20 - Math.floor((Date.now() - startTime) / 60000));
+            const totalXP = Math.max(baseXP - hintPenalty + timeBonus, 10);
 
-            const feedbackArea = document.getElementById('feedbackArea');
-            let feedbackHTML = `
-                <div class="feedback-header">
-                    <h3>🌟 Excellent reflective work, ${userName}!</h3>
-                    <p>Remember: in reading comprehension there are no "correct" unique answers. 
-                    What is valuable is that you <strong>thought</strong> and <strong>interpreted</strong> the text.</p>
-                </div>
-            `;
+ Continúo con el resto del código del reader y el CSS completo:
+
+```html
+            // Guardar progreso
+            const completed = userData.completed || [];
+            const readingId = localStorage.getItem('currentReading');
+            const isFirstTime = !completed.includes(readingId);
             
-            feedbackHTML += '<div class="feedback-details">';
-            answers.forEach((a, index) => {
-                const length = a.answer.length;
-                let encouragement = '';
-                let icon = '';
-                if (length < 80) {
-                    encouragement = 'Good start. Try to expand your answer next time. Can you give a specific example from the text?';
-                    icon = '🌱';
-                } else if (length < 150) {
-                    encouragement = 'Good reflection! You show that you read with attention. Did you notice any additional detail you could mention?';
-                    icon = '🌿';
-                } else {
-                    encouragement = 'Very complete analysis! You show excellent comprehension and critical thinking. Keep it up!';
-                    icon = '🌳';
+            if (isFirstTime) {
+                completed.push(readingId);
+                userData.completed = completed;
+                userData.xp = (userData.xp || 0) + totalXP;
+                userData.totalHints = (userData.totalHints || 0) + helpClicks;
+                
+                // Subir de nivel
+                const newLevel = Math.floor((userData.xp / 100)) + 1;
+                if (newLevel > (userData.level || 1)) {
+                    userData.level = newLevel;
                 }
                 
-                feedbackHTML += `
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <span class="feedback-icon">${icon}</span>
-                            <span class="feedback-level">Question ${index + 1}</span>
-                        </div>
-                        <p class="feedback-length">Your answer has <strong>${length}</strong> characters.</p>
-                        <p class="encouragement">${encouragement}</p>
-                    </div>
-                `;
-            });
-            feedbackHTML += '</div>';
+                localStorage.setItem('readwiseUser', JSON.stringify(userData));
+            }
 
-            feedbackHTML += `
-                <div class="next-steps">
-                    <h4>🚀 What to do now to consolidate your learning?</h4>
-                    <div class="steps-grid">
-                        <div class="step-card">
-                            <span class="step-icon">🔄</span>
-                            <p><strong>Re-read</strong> the text and find details you did not notice before</p>
-                        </div>
-                        <div class="step-card">
-                            <span class="step-icon">📝</span>
-                            <p><strong>Summarize</strong> the text in 3 sentences with your own words</p>
-                        </div>
-                        <div class="step-card">
-                            <span class="step-icon">🗣️</span>
-                            <p><strong>Explain</strong> the text to someone else or record an audio</p>
-                        </div>
-                        <div class="step-card">
-                            <span class="step-icon">🎯</span>
-                            <p><strong>Connect</strong> the topic with your own life or experience</p>
-                        </div>
-                    </div>
-                    <button class="new-reading-btn" onclick="window.location.href='dashboard.html'">
-                        📚 Choose Another Reading
-                    </button>
+            // Mostrar celebración
+            showCelebration(totalXP, isFirstTime);
+        }
+
+        function showCelebration(xp, isFirstTime) {
+            const modal = document.getElementById('celebrationModal');
+            document.getElementById('xpEarned').textContent = `+${xp}`;
+            
+            const statsHTML = `
+                <div class="c-stat">
+                    <span class="c-stat-icon">⏱️</span>
+                    <span class="c-stat-val">${document.getElementById('readingTimer').textContent.replace('⏱️ ', '')}</span>
+                    <span class="c-stat-label">Tiempo</span>
+                </div>
+                <div class="c-stat">
+                    <span class="c-stat-icon">🎯</span>
+                    <span class="c-stat-val">${currentReading.questions.length}</span>
+                    <span class="c-stat-label">Preguntas</span>
+                </div>
+                <div class="c-stat">
+                    <span class="c-stat-icon">💡</span>
+                    <span class="c-stat-val">${helpClicks}</span>
+                    <span class="c-stat-label">Ayudas</span>
                 </div>
             `;
-
-            feedbackArea.innerHTML = feedbackHTML;
-            feedbackArea.classList.remove('hidden');
-            feedbackArea.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('celebrationStats').innerHTML = statsHTML;
+            
+            // Confetti
+            createConfetti();
+            
+            modal.classList.remove('hidden');
+            modal.style.animation = 'celebrationIn 0.6s ease';
         }
+
+        function createConfetti() {
+            const container = document.getElementById('confetti');
+            container.innerHTML = '';
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+            
+            for (let i = 0; i < 60; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti-piece';
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDelay = Math.random() * 2 + 's';
+                conf.style.animationDuration = (2 + Math.random() * 2) + 's';
+                container.appendChild(conf);
+            }
+        }
+
+        function closeCelebration() {
+            window.location.href = 'hub.html';
+        }
+
+        function shakeButton(btn) {
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 500);
+        }
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('readwiseTheme', next);
+        }
+
+        // Partículas
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Tema
+        const savedTheme = localStorage.getItem('readwiseTheme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
 
         init();
     </script>
