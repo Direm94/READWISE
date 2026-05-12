@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadWise - Select Level</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/Rh2q6syR/logo-2.png">
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <div class="top-bar">
+                <div class="logo-small">
+                    <img src="https://i.postimg.cc/Rh2q6syR/logo-2.png" alt="Logo" class="logo-img-small">
+                </div>
+                <div class="user-info">
+                    <span id="userGreeting">Hello!</span>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Dark/Light mode">🌓</button>
+                    <button class="logout-btn" onclick="logout()" title="Change user">🚪</button>
+                </div>
+            </div>
+            <h1>Choose Your Level</h1>
+            <p class="subtitle">Select the level that matches your English skills</p>
+        </header>
+
+        <main class="level-selector">
+            <div class="levels">
+                <button class="level-btn" onclick="selectLevel('A1')">
+                    <span class="level-tag">A1</span>
+                    <span class="level-desc">Beginner</span>
+                    <small>Basic vocabulary, simple sentences, daily routines</small>
+                    <div class="level-progress" id="progress-A1"></div>
+                </button>
+                <button class="level-btn" onclick="selectLevel('A2')">
+                    <span class="level-tag">A2</span>
+                    <span class="level-desc">Elementary</span>
+                    <small>Descriptions, past events, personal experiences</small>
+                    <div class="level-progress" id="progress-A2"></div>
+                </button>
+                <button class="level-btn" onclick="selectLevel('B1')">
+                    <span class="level-tag">B1</span>
+                    <span class="level-desc">Intermediate</span>
+                    <small>Opinions, arguments, longer texts</small>
+                    <div class="level-progress" id="progress-B1"></div>
+                </button>
+                <button class="level-btn" onclick="selectLevel('B2')">
+                    <span class="level-tag">B2</span>
+                    <span class="level-desc">Upper-Intermediate</span>
+                    <small>Complex articles, abstract ideas, detailed analysis</small>
+                    <div class="level-progress" id="progress-B2"></div>
+                </button>
+            </div>
+        </main>
+
+        <div class="stats-overview">
+            <h3>📊 Your Progress</h3>
+            <div class="stats-grid" id="userStats">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check user
+        const userName = localStorage.getItem('readwiseUser');
+        if (!userName) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('userGreeting').textContent = `👋 Hi, ${userName}!`;
+        }
+
+        // Theme
+        const currentTheme = localStorage.getItem('readwiseTheme') || 'light';
+        document.body.setAttribute('data-theme', currentTheme);
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('readwiseTheme', next);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to change user? Your progress will be saved.')) {
+                localStorage.removeItem('readwiseUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function selectLevel(level) {
+            localStorage.setItem('userLevel', level);
+            window.location.href = 'dashboard.html';
+        }
+
+        // Load progress
+        function loadProgress() {
+            const completed = JSON.parse(localStorage.getItem('readwiseCompleted') || '[]');
+            const stats = { A1: 0, A2: 0, B1: 0, B2: 0 };
+            const totalByLevel = { A1: 3, A2: 3, B1: 3, B2: 3 };
+            
+            completed.forEach(id => {
+                const level = id.split('-')[0].toUpperCase();
+                if (stats[level] !== undefined) stats[level]++;
+            });
+
+            Object.keys(stats).forEach(level => {
+                const pct = Math.round((stats[level] / totalByLevel[level]) * 100);
+                const bar = document.getElementById(`progress-${level}`);
+                if (bar) {
+                    bar.innerHTML = `<div class="progress-fill" style="width:${pct}%"></div><span>${pct}%</span>`;
+                }
+            });
+
+            // Stats overview
+            const totalRead = completed.length;
+            const totalHints = parseInt(localStorage.getItem('readwiseHints') || 0);
+            const joinDate = new Date(localStorage.getItem('readwiseJoined') || Date.now());
+            const daysActive = Math.floor((Date.now() - joinDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            document.getElementById('userStats').innerHTML = `
+                <div class="stat-box">
+                    <span class="stat-num">${totalRead}</span>
+                    <span class="stat-label">Texts read</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">${totalHints}</span>
+                    <span class="stat-label">Hints used</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">${daysActive}</span>
+                    <span class="stat-label">Days active</span>
+                </div>
+            `;
+        }
+
+        loadProgress();
+    </script>
+</body>
+</html>
